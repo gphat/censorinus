@@ -22,7 +22,7 @@ class Client(
   }
 
   // Check this thing every 100ms
-  executor.scheduleAtFixedRate(task, checkInterval, flushInterval, TimeUnit.MILLISECONDS)
+  executor.scheduleAtFixedRate(task, flushInterval, flushInterval, TimeUnit.MILLISECONDS)
 
   def counter(name: String, value: Double, sampleRate: Double = defaultSampleRate) = enqueue(
     Metric(name = name, value = value, sampleRate = sampleRate, metricType = "c")

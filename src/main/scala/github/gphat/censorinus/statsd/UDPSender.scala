@@ -1,7 +1,9 @@
-package github.gphat.censorinus
+package github.gphat.censorinus.statsd
 
 import java.net.InetSocketAddress
 import java.nio.channels.DatagramChannel
+
+import github.gphat.censorinus.{Metric,MetricSender}
 
 class StatsDUDPSender(hostname: String, port: Int) extends MetricSender {
 

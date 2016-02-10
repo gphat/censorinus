@@ -28,7 +28,6 @@ class ClientSpec extends FlatSpec with Matchers with ScalaFutures {
     client.gauge("foobar", 1.0)
     // Pause to let things catch up
     Thread.sleep(200)
-    println(sender.getMetrics)
     val m = sender.getMetrics(0)
     m.name should be ("foobar")
     m.value should be (1.0)
