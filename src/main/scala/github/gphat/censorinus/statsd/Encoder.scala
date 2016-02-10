@@ -7,6 +7,15 @@ import github.gphat.censorinus.Metric
   */
 object Encoder {
 
+  def encode(metric: Metric): String = metric.metricType match {
+    case "c" => encodeCounter(metric)
+    case "g" => encodeGauge(metric)
+    case "h" => encodeHistogram(metric)
+    case "m" => encodeMeter(metric)
+    case "ms" => encodeTimer(metric)
+    case _ => "" // TODO Complain!
+  }
+
   def encodeCounter(metric: Metric): String = {
     s"${metric.name}:${metric.value.toString}|c${encodeSampleRate(metric)}"
   }
