@@ -21,22 +21,63 @@ class ClientSpec extends FlatSpec with Matchers with ScalaFutures {
 
   implicit val defaultPatience = PatienceConfig(timeout = Span(10, Seconds), interval = Span(50, Millis))
 
-  "Client" should "do normal metric things" in {
-    val sender = new TestSender()
-    val client = new Client(sender)
+  "Client" should "deal with gauges" in {
+    val client = new Client(sender = new TestSender(), flushInterval = -1)
 
     client.gauge("foobar", 1.0)
-    // Pause to let things catch up
-    Thread.sleep(200)
-    val m = sender.getMetrics(0)
+    val m = client.getQueue.poll
     m.name should be ("foobar")
     m.value should be (1.0)
+    m.metricType should be ("g")
   }
 
-  // it should "silently handle candidate failures" in {
-  //   val ex = new Experiment[String](name = Some("better_string"), control = slowOK, candidate = fastFail)
-  //   whenReady(ex.perform)({ res =>
-  //     res should be("OK")
-  //   })
-  // }
+  it should "deal with counters" in {
+    val client = new Client(sender = new TestSender(), flushInterval = -1)
+
+    client.counter("foobar", 1.0)
+    val m = client.getQueue.poll
+    m.name should be ("foobar")
+    m.value should be (1.0)
+    m.metricType should be ("c")
+  }
+
+  it should "deal with increments" in {
+    val client = new Client(sender = new TestSender(), flushInterval = -1)
+
+    client.increment("foobar")
+    val m = client.getQueue.poll
+    m.name should be ("foobar")
+    m.value should be (1.0)
+    m.metricType should be ("c")
+  }
+
+  it should "deal with decrements" in {
+    val client = new Client(sender = new TestSender(), flushInterval = -1)
+
+    client.increment("foobar")
+    val m = client.getQueue.poll
+    m.name should be ("foobar")
+    m.value should be (1.0)
+    m.metricType should be ("c")
+  }
+
+  it should "deal with histograms" in {
+    val client = new Client(sender = new TestSender(), flushInterval = -1)
+
+    client.histogram("foobar", 1.0)
+    val m = client.getQueue.poll
+    m.name should be ("foobar")
+    m.value should be (1.0)
+    m.metricType should be ("h")
+  }
+
+  it should "deal with meters" in {
+    val client = new Client(sender = new TestSender(), flushInterval = -1)
+
+    client.meter("foobar", 1.0)
+    val m = client.getQueue.poll
+    m.name should be ("foobar")
+    m.value should be (1.0)
+    m.metricType should be ("m")
+  }
 }

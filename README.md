@@ -2,7 +2,9 @@ Censorinus is a StatsD client with multiple personalities.
 
 # Features
 
+* All metric names and such are encoded as UTF-8
 * Asynchronous
+* StatsD Compatibility
 
 # Example
 
@@ -21,3 +23,7 @@ delay:
 ```scala
 val c = new Client(flushInterval = 50)
 ```
+
+# StatsD Compatibility & Features
+
+Censorinus is compatibile with the StatsD specification as defined [here](https://github.com/b/statsd_spec).
