@@ -15,6 +15,14 @@ object Encoder {
     s"${metric.name}:${metric.value.toString}|g"
   }
 
+  def encodeHistogram(metric: Metric): String = {
+    s"${metric.name}:${metric.value.toString}|h"
+  }
+
+  def encodeMeter(metric: Metric): String = {
+    s"${metric.name}:${metric.value.toString}|m"
+  }
+
   def encodeSampleRate(metric: Metric): String = {
     if(metric.sampleRate == 1.0) {
       ""
