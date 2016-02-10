@@ -14,7 +14,8 @@ import github.gphat.censorinus.Client
 
 val c = new Client()
 
-c.counter(name = "foo.count", value = 2, sampleRate = 0.5) // Optional sample rate, works with all methods!
+// Optional sample rate, works with all methods!
+c.counter(name = "foo.count", value = 2, sampleRate = 0.5)
 c.increment(name = "foo.count") // Defaults to 1
 c.decrement(name = "foo.count") // Defaults to 1
 c.gauge(name = "foo.temperature", value = 84.0)
