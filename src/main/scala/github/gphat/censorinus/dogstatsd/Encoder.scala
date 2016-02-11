@@ -1,9 +1,9 @@
-package github.gphat.censorinus.statsd
+package github.gphat.censorinus.dogstatsd
 
 import github.gphat.censorinus.Metric
 
-/** A Metric to String encoder for StatsD protocol.
-  * @see See [[https://github.com/b/statsd_spec]] for full spec
+/** A Metric to String encoder for DogStatsD protocol.
+  * @see See [[http://docs.datadoghq.com/guides/dogstatsd/#datagram-format]] for full spec
   */
 object Encoder {
 
@@ -43,6 +43,11 @@ object Encoder {
 
   def encodeSet(metric: Metric): String = {
     s"${metric.name}:${metric.value}|s"
+  }
+
+  def encodeTags(metric: Metric): String = {
+    // TODO Make sure this is well formed and such
+    metric.tags.mkString(",")
   }
 
   def encodeTimer(metric: Metric): String = {

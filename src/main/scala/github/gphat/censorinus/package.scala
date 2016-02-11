@@ -6,6 +6,7 @@ package object censorinus {
     name: String,
     value: Double,
     metricType: String,
-    sampleRate: Double = 1.0
+    sampleRate: Double = 1.0,
+    tags: Seq[String] = Seq.empty
   )
 }

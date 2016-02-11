@@ -33,4 +33,9 @@ class EncoderSpec extends FlatSpec with Matchers {
     val m = Metric(name = "foobar", value = 1.0, metricType = "m")
     Encoder.encode(m) should be ("foobar:1.0|m")
   }
+
+  it should "encode sets" in {
+    val m = Metric(name = "foobar", value = 78, metricType = "s")
+    Encoder.encode(m) should be ("foobar:78.0|s")
+  }
 }
