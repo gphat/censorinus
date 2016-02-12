@@ -1,13 +1,7 @@
-import java.lang.Thread
-import java.util.concurrent.{Executors,ScheduledThreadPoolExecutor}
 import org.scalatest._
-import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.time.{Millis, Seconds, Span}
-import scala.collection.mutable.ArrayBuffer
-import scala.concurrent.Future
 import github.gphat.censorinus.{Client,Metric,MetricSender}
 
-class SynchronySpec extends FlatSpec with Matchers with ScalaFutures {
+class SynchronySpec extends FlatSpec with Matchers {
 
   "Client" should "deal with gauges" in {
     val s = new TestSender()
