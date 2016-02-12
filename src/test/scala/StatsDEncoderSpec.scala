@@ -2,9 +2,9 @@ import org.scalatest._
 import github.gphat.censorinus.Metric
 import github.gphat.censorinus.statsd.Encoder
 
-class EncoderSpec extends FlatSpec with Matchers {
+class StatsDEncoderSpec extends FlatSpec with Matchers {
 
-  "Encoder" should "encode gauges" in {
+  "StatsD Encoder" should "encode gauges" in {
 
     val g = Metric(name = "foobar", value = "1.0", metricType = "g")
     Encoder.encode(g) should be ("foobar:1.0|g")
