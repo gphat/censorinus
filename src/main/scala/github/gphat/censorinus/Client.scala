@@ -8,17 +8,24 @@ import scala.util.Random
   * @constructor Creates a new client instance
   * @param sender The MetricSender implementation this client will use
   * @param defaultSampleRate A sample rate default to be used for all metric methods. Defaults to 1.0
-  * @param flushInterval How often in milliseconds to flush the local buffer to keep things async. Defaults to 100ms. If you set this to -1 it will just buffer forever which is hilarious but only useful for testing.
+  * @param flushInterval How often in milliseconds to flush the local buffer to keep things async. Defaults to 100ms
+  * @param asynchronous True if you want the client to asynch, false for blocking!
   */
 class Client(
   sender: MetricSender,
   val defaultSampleRate: Double = 1.0,
-  flushInterval: Long = 100L
+  flushInterval: Long = 100L,
+  asynchronous: Boolean = true
 ) {
 
   val queue = new ConcurrentLinkedQueue[Metric]()
   // This is an Option[Executor] to allow for NOT sending things.
-  val executor = if(flushInterval > -1) {
+  // We'll make an executor if the flushInterval is > -1 and we are
+  // running in asynchronous mode then spin up the thread-works
+  if(flushInterval < 1) {
+    throw new Exception("Please use a flush interval > 1!")
+  }
+  val executor = if(asynchronous) {
     Some(Executors.newScheduledThreadPool(1, new ThreadFactory {
       override def newThread(r: Runnable): Thread = {
         val t = Executors.defaultThreadFactory.newThread(r)
@@ -109,7 +116,11 @@ class Client(
 
   private def enqueue(metric: Metric, sampleRate: Double = defaultSampleRate) = {
     if(sampleRate == 1.0 || Random.nextDouble <= sampleRate) {
-      queue.offer(metric)
+      if(asynchronous) {
+        queue.offer(metric)
+      } else {
+        sender.send(metric)
+      }
     }
   }
 }

@@ -8,13 +8,13 @@ import scala.concurrent.Future
 import github.gphat.censorinus.{Client,Metric,MetricSender}
 
 class TestSender extends MetricSender {
-  val metrics = new ArrayBuffer[Metric]()
+  val buffer = new ArrayBuffer[Metric]()
 
   def send(metric: Metric): Unit = {
-    metrics.append(metric)
+    buffer.append(metric)
   }
 
-  def getMetrics = metrics
+  def getBuffer = buffer
 }
 
 class ClientSpec extends FlatSpec with Matchers with ScalaFutures {
@@ -22,7 +22,7 @@ class ClientSpec extends FlatSpec with Matchers with ScalaFutures {
   implicit val defaultPatience = PatienceConfig(timeout = Span(10, Seconds), interval = Span(50, Millis))
 
   "Client" should "deal with gauges" in {
-    val client = new Client(sender = new TestSender(), flushInterval = -1)
+    val client = new Client(sender = new TestSender())
 
     client.gauge("foobar", 1.0)
     val m = client.getQueue.poll
@@ -32,7 +32,7 @@ class ClientSpec extends FlatSpec with Matchers with ScalaFutures {
   }
 
   it should "deal with counters" in {
-    val client = new Client(sender = new TestSender(), flushInterval = -1)
+    val client = new Client(sender = new TestSender())
 
     client.counter("foobar", 1.0)
     val m = client.getQueue.poll
@@ -42,7 +42,7 @@ class ClientSpec extends FlatSpec with Matchers with ScalaFutures {
   }
 
   it should "deal with increments" in {
-    val client = new Client(sender = new TestSender(), flushInterval = -1)
+    val client = new Client(sender = new TestSender())
 
     client.increment("foobar")
     val m = client.getQueue.poll
@@ -52,7 +52,7 @@ class ClientSpec extends FlatSpec with Matchers with ScalaFutures {
   }
 
   it should "deal with decrements" in {
-    val client = new Client(sender = new TestSender(), flushInterval = -1)
+    val client = new Client(sender = new TestSender())
 
     client.increment("foobar")
     val m = client.getQueue.poll
@@ -62,7 +62,7 @@ class ClientSpec extends FlatSpec with Matchers with ScalaFutures {
   }
 
   it should "deal with histograms" in {
-    val client = new Client(sender = new TestSender(), flushInterval = -1)
+    val client = new Client(sender = new TestSender())
 
     client.histogram("foobar", 1.0)
     val m = client.getQueue.poll
@@ -72,7 +72,7 @@ class ClientSpec extends FlatSpec with Matchers with ScalaFutures {
   }
 
   it should "deal with meters" in {
-    val client = new Client(sender = new TestSender(), flushInterval = -1)
+    val client = new Client(sender = new TestSender())
 
     client.meter("foobar", 1.0)
     val m = client.getQueue.poll

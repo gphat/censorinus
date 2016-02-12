@@ -4,7 +4,7 @@ Censorinus is a StatsD client with multiple personalities.
 
 * All metric names and such are encoded as UTF-8
 * Client-side sampling, i.e. don't send it to across the network to reduce traffic
-* Asynchronous
+* Asynchronous or Synchronous, your call!
 * StatsD Compatibility
 
 # Example
@@ -23,7 +23,7 @@ c.histogram(name = "foo.depth", value = 123.0)
 c.meter(name = "foo.depth", value = 12.0)
 ```
 
-# Asynchronous
+# Asynchronous (default behavior)
 
 Metrics are locally queued up and emptied out periodically. By default any
 pending metrics are emptied out every 100ms. You can change this to another
@@ -32,6 +32,13 @@ delay:
 ```scala
 val c = new Client(flushInterval = 50)
 ```
+
+# Synchronous
+
+If you instantiate the client with `asynchronous=false` then the various metric
+methods will immediately emit your metric synchronously using the underlying
+sending mechanism. This might be great for UDP but other backends may have
+a high penalty!
 
 # Sampling
 
