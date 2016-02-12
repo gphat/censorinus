@@ -13,6 +13,11 @@ Censorinus is a StatsD client with multiple personalities.
 
 # Example
 
+## StatsD
+
+Censorinus is compatible with the StatsD specification as defined [here](https://github.com/etsy/statsd/blob/master/docs/metric_types.md).
+
+
 ```scala
 import github.gphat.censorinus.StatsDClient
 
@@ -26,6 +31,19 @@ c.gauge(name = "foo.temperature", value = 84.0)
 c.histogram(name = "foo.depth", value = 123.0)
 c.meter(name = "foo.depth", value = 12.0)
 c.set(name = "foo.users.seen", value = "gphat")
+```
+
+## DogStatsD
+
+Censorinus is compatible with the DogStatsD specification as defined [here](http://docs.datadoghq.com/guides/dogstatsd/#datagram-format).
+
+```scala
+import github.gphat.censorinus.DogStatsDClient
+
+val c = new DogStatsDClient(host = "some.host", port = 8125)
+
+// Not gonna list 'em all since the methods are the same, but allow tags!
+c.counter(name = "foo.count", value = 2, tags = Seq("foo:bar"))
 ```
 
 # Asynchronous (default behavior)
@@ -64,11 +82,3 @@ c.counter(name = "foo.count", value = 2, sampleRate = 0.5)
 Note that StatsD's counters support an additional sample rate argument, since
 counters can be multiplied by the sample rate downstream to give an accurate
 number.
-
-# StatsD Compatibility & Features
-
-Censorinus is compatible with the StatsD specification as defined [here](https://github.com/etsy/statsd/blob/master/docs/metric_types.md).
-
-# DogStatsD Compatibility & Features
-
-Censorinus is compatible with the DogStatsD specification as defined [here](http://docs.datadoghq.com/guides/dogstatsd/#datagram-format).
