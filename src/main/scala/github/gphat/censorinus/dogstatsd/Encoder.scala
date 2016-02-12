@@ -1,11 +1,11 @@
 package github.gphat.censorinus.dogstatsd
 
-import github.gphat.censorinus.Metric
+import github.gphat.censorinus.{Metric,MetricEncoder}
 
 /** A Metric to String encoder for DogStatsD protocol.
   * @see See [[http://docs.datadoghq.com/guides/dogstatsd/#datagram-format]] for full spec
   */
-object Encoder {
+object Encoder extends MetricEncoder {
 
   def encode(metric: Metric): String = metric.metricType match {
     case "c" => encodeCounter(metric)

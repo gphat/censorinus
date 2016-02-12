@@ -8,13 +8,14 @@ Censorinus is a StatsD client with multiple personalities.
 * Client-side sampling, i.e. don't send it to across the network to reduce traffic
 * Asynchronous or Synchronous, your call!
 * StatsD Compatibility
+* More coming!
 
 # Example
 
 ```scala
-import github.gphat.censorinus.Client
+import github.gphat.censorinus.StatsDClient
 
-val c = new Client()
+val c = new StatsDClient(host = "some.host", port = 8125)
 
 // Optional sample rate, works with all methods!
 c.counter(name = "foo.count", value = 2, sampleRate = 0.5)
@@ -23,6 +24,7 @@ c.decrement(name = "foo.count") // Defaults to 1
 c.gauge(name = "foo.temperature", value = 84.0)
 c.histogram(name = "foo.depth", value = 123.0)
 c.meter(name = "foo.depth", value = 12.0)
+c.set(name = "foo.users.seen", value = "gphat")
 ```
 
 # Asynchronous (default behavior)
@@ -42,6 +44,10 @@ methods will immediately emit your metric synchronously using the underlying
 sending mechanism. This might be great for UDP but other backends may have
 a high penalty!
 
+```scala
+val c = new Client(asynchronous = false)
+```
+
 # Sampling
 
 All methods have a `sampleRate` parameter that will be used randomly determine
@@ -50,6 +56,14 @@ decrease the rate at which metrics are sent and the work that the downstream
 aggregation needs to do. Note that only the counter type natively understands
 sample rate. Other types are lossy.
 
+```scala
+c.counter(name = "foo.count", value = 2, sampleRate = 0.5)
+```
+
+Note that StatsD's counters support an additional sample rate argument, since
+counters can be multiplied by the sample rate downstream to give an accurate
+number.
+
 # StatsD Compatibility & Features
 
-Censorinus is compatibile with the StatsD specification as defined [here](https://github.com/b/statsd_spec).
+Censorinus is compatibile with the StatsD specification as defined [here](https://github.com/etsy/statsd/blob/master/docs/metric_types.md).

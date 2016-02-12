@@ -12,6 +12,7 @@ import scala.util.Random
   * @param asynchronous True if you want the client to asynch, false for blocking!
   */
 class Client(
+  encoder: MetricEncoder,
   sender: MetricSender,
   val defaultSampleRate: Double = 1.0,
   flushInterval: Long = 100L,
@@ -42,7 +43,7 @@ class Client(
       def run() {
         // When we awake, send everything we've got in the queue!
         while(!queue.isEmpty) {
-          sender.send(queue.poll)
+          sender.send(encoder.encode(queue.poll))
         }
       }
     }
@@ -130,9 +131,11 @@ class Client(
   private def enqueue(metric: Metric, sampleRate: Double = defaultSampleRate) = {
     if(sampleRate == 1.0 || Random.nextDouble <= sampleRate) {
       if(asynchronous) {
+        // Queue it up! Leave encoding for later so we back as soon as we can.
         queue.offer(metric)
       } else {
-        sender.send(metric)
+        // Just send it.
+        sender.send(encoder.encode(metric))
       }
     }
   }

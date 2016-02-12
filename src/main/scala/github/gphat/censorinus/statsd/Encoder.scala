@@ -5,7 +5,7 @@ import github.gphat.censorinus._
 /** A Metric to String encoder for StatsD protocol.
   * @see See [[https://github.com/b/statsd_spec]] for full spec
   */
-object Encoder {
+object Encoder extends MetricEncoder {
 
   def encode(metric: Metric): String = metric.metricType match {
     case "c" => encodeCounter(metric)

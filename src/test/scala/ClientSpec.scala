@@ -1,29 +1,23 @@
-import java.lang.Thread
-import java.util.concurrent.{Executors,ScheduledThreadPoolExecutor}
 import org.scalatest._
-import org.scalatest.concurrent.ScalaFutures
-import org.scalatest.time.{Millis, Seconds, Span}
 import scala.collection.mutable.ArrayBuffer
-import scala.concurrent.Future
 import github.gphat.censorinus.{Client,Metric,MetricSender}
+import github.gphat.censorinus.statsd.Encoder
 
 class TestSender extends MetricSender {
-  val buffer = new ArrayBuffer[Metric]()
+  val buffer = new ArrayBuffer[String]()
 
-  def send(metric: Metric): Unit = {
-    buffer.append(metric)
+  def send(message: String): Unit = {
+    buffer.append(message)
   }
 
   def getBuffer = buffer
 }
 
-class ClientSpec extends FlatSpec with Matchers with ScalaFutures {
+class ClientSpec extends FlatSpec with Matchers {
 
-  implicit val defaultPatience = PatienceConfig(timeout = Span(10, Seconds), interval = Span(50, Millis))
+  val client = new Client(encoder = Encoder, sender = new TestSender())
 
   "Client" should "deal with gauges" in {
-    val client = new Client(sender = new TestSender())
-
     client.gauge("foobar", 1.0)
     val m = client.getQueue.poll
     m.name should be ("foobar")
@@ -32,8 +26,6 @@ class ClientSpec extends FlatSpec with Matchers with ScalaFutures {
   }
 
   it should "deal with counters" in {
-    val client = new Client(sender = new TestSender())
-
     client.counter("foobar", 1.0)
     val m = client.getQueue.poll
     m.name should be ("foobar")
@@ -42,8 +34,6 @@ class ClientSpec extends FlatSpec with Matchers with ScalaFutures {
   }
 
   it should "deal with increments" in {
-    val client = new Client(sender = new TestSender())
-
     client.increment("foobar")
     val m = client.getQueue.poll
     m.name should be ("foobar")
@@ -52,8 +42,6 @@ class ClientSpec extends FlatSpec with Matchers with ScalaFutures {
   }
 
   it should "deal with decrements" in {
-    val client = new Client(sender = new TestSender())
-
     client.increment("foobar")
     val m = client.getQueue.poll
     m.name should be ("foobar")
@@ -62,8 +50,6 @@ class ClientSpec extends FlatSpec with Matchers with ScalaFutures {
   }
 
   it should "deal with histograms" in {
-    val client = new Client(sender = new TestSender())
-
     client.histogram("foobar", 1.0)
     val m = client.getQueue.poll
     m.name should be ("foobar")
@@ -72,8 +58,6 @@ class ClientSpec extends FlatSpec with Matchers with ScalaFutures {
   }
 
   it should "deal with meters" in {
-    val client = new Client(sender = new TestSender())
-
     client.meter("foobar", 1.0)
     val m = client.getQueue.poll
     m.name should be ("foobar")
@@ -82,8 +66,6 @@ class ClientSpec extends FlatSpec with Matchers with ScalaFutures {
   }
 
   it should "deal with sets" in {
-    val client = new Client(sender = new TestSender())
-
     client.set("foobar", "fart")
     val m = client.getQueue.poll
     m.name should be ("foobar")
