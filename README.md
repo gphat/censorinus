@@ -1,17 +1,17 @@
 [![Build Status](https://travis-ci.org/gphat/censorinus.svg?branch=master)](https://travis-ci.org/gphat/censorinus)
 
-Censorinus is a StatsD client with multiple personalities.
+Censorinus is a Scala runtime metrics client with multiple personalities.
 
 # Features
 
-* All metric names and such are encoded as UTF-8
-* Client-side sampling, i.e. don't send it to across the network to reduce traffic
+* No dependencies, just boring Scala and Java stuff.
+* Client-side sampling, i.e. don't send it to across the network to reduce traffic.
 * Asynchronous or Synchronous, your call!
 * StatsD Compatibility
 * DogStatsD Compatibility
-* More coming!
+* UDP only, for now.
 
-# Example
+# Examples
 
 ## StatsD
 
@@ -82,3 +82,7 @@ c.counter(name = "foo.count", value = 2, sampleRate = 0.5)
 Note that StatsD's counters support an additional sample rate argument, since
 counters can be multiplied by the sample rate downstream to give an accurate
 number.
+
+# Notes
+
+* All metric names and such are encoded as UTF-8.
