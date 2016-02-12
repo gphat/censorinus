@@ -57,7 +57,7 @@ class Client(
     * @param sampleRate The rate at which to sample this metric.
     */
   def counter(name: String, value: Double, sampleRate: Double = defaultSampleRate) = enqueue(
-    Metric(name = name, value = value, sampleRate = sampleRate, metricType = "c")
+    Metric(name = name, value = value.toString, sampleRate = sampleRate, metricType = "c")
   )
 
   /** Emit a decrement metric.
@@ -66,7 +66,7 @@ class Client(
     * @param sampleRate The rate at which to sample this metric.
     */
   def decrement(name: String, value: Double = 1, sampleRate: Double = defaultSampleRate) = enqueue(
-    Metric(name = name, value = value, sampleRate = sampleRate, metricType = "c")
+    Metric(name = name, value = value.toString, sampleRate = sampleRate, metricType = "c")
   )
 
   /** Emit a gauge metric.
@@ -75,7 +75,7 @@ class Client(
     * @param sampleRate The rate at which to sample this metric.
     */
   def gauge(name: String, value: Double, sampleRate: Double = defaultSampleRate) = enqueue(
-    Metric(name = name, value = value, sampleRate = sampleRate, metricType = "g")
+    Metric(name = name, value = value.toString, sampleRate = sampleRate, metricType = "g")
   )
 
   /** Emit a histogram metric.
@@ -84,7 +84,7 @@ class Client(
     * @param sampleRate The rate at which to sample this metric.
     */
   def histogram(name: String, value: Double, sampleRate: Double = defaultSampleRate) = enqueue(
-    Metric(name = name, value = value, sampleRate = sampleRate, metricType = "h")
+    Metric(name = name, value = value.toString, sampleRate = sampleRate, metricType = "h")
   )
 
   /** Emit an increment metric.
@@ -93,7 +93,7 @@ class Client(
     * @param sampleRate The rate at which to sample this metric.
     */
   def increment(name: String, value: Double = 1, sampleRate: Double = defaultSampleRate) = enqueue(
-    Metric(name = name, value = value, sampleRate = sampleRate, metricType = "c")
+    Metric(name = name, value = value.toString, sampleRate = sampleRate, metricType = "c")
   )
 
   /** Emit a meter metric.
@@ -102,7 +102,20 @@ class Client(
     * @param sampleRate The rate at which to sample this metric.
     */
   def meter(name: String, value: Double, sampleRate: Double = defaultSampleRate) = enqueue(
-    Metric(name = name, value = value, sampleRate = sampleRate, metricType = "m")
+    Metric(name = name, value = value.toString, sampleRate = sampleRate, metricType = "m")
+  )
+
+  def set(name: String, value: String) = enqueue(
+    Metric(name = name, value = value, metricType = "s")
+  )
+
+  /** Emit a timer metric.
+    * @param name The name of the metric
+    * @param value The value of the timer in milliseconds
+    * @param sampleRate The rate at which to sample this metric.
+    */
+  def timer(name: String, milliseconds: Double, sampleRate: Double = defaultSampleRate) = enqueue(
+    Metric(name = name, value = milliseconds.toString, sampleRate = sampleRate, metricType = "ms")
   )
 
   /** Explicitly shut down the client and it's underlying bits.

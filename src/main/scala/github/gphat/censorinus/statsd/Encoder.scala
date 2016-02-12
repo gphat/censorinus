@@ -1,6 +1,6 @@
 package github.gphat.censorinus.statsd
 
-import github.gphat.censorinus.Metric
+import github.gphat.censorinus._
 
 /** A Metric to String encoder for StatsD protocol.
   * @see See [[https://github.com/b/statsd_spec]] for full spec
@@ -10,7 +10,7 @@ object Encoder {
   def encode(metric: Metric): String = metric.metricType match {
     case "c" => encodeCounter(metric)
     case "g" => encodeGauge(metric)
-    case "h" => encodeHistogram(metric)
+    case "h" => encodeTimer(metric) // StatsD doesn't support histograms, use timer instead?
     case "m" => encodeMeter(metric)
     case "ms" => encodeTimer(metric)
     case "s" => encodeSet(metric)
@@ -18,26 +18,22 @@ object Encoder {
   }
 
   def encodeCounter(metric: Metric): String = {
-    s"${metric.name}:${metric.value.toString}|c${encodeSampleRate(metric)}"
+    s"${metric.name}:${metric.value}|c${encodeSampleRate(metric)}"
   }
 
   def encodeGauge(metric: Metric): String = {
-    s"${metric.name}:${metric.value.toString}|g"
-  }
-
-  def encodeHistogram(metric: Metric): String = {
-    s"${metric.name}:${metric.value.toString}|h"
+    s"${metric.name}:${metric.value}|g"
   }
 
   def encodeMeter(metric: Metric): String = {
-    s"${metric.name}:${metric.value.toString}|m"
+    s"${metric.name}:${metric.value}|m"
   }
 
   def encodeSampleRate(metric: Metric): String = {
     if(metric.sampleRate == 1.0) {
       ""
     } else {
-      s"@${metric.sampleRate.toString}"
+      s"@${metric.sampleRate}"
     }
   }
 
@@ -46,6 +42,6 @@ object Encoder {
   }
 
   def encodeTimer(metric: Metric): String = {
-    s"${metric.name}:${metric.value.toString}|ms"
+    s"${metric.name}:${metric.value}|ms"
   }
 }

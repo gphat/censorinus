@@ -27,7 +27,7 @@ class ClientSpec extends FlatSpec with Matchers with ScalaFutures {
     client.gauge("foobar", 1.0)
     val m = client.getQueue.poll
     m.name should be ("foobar")
-    m.value should be (1.0)
+    m.value should be ("1.0")
     m.metricType should be ("g")
   }
 
@@ -37,7 +37,7 @@ class ClientSpec extends FlatSpec with Matchers with ScalaFutures {
     client.counter("foobar", 1.0)
     val m = client.getQueue.poll
     m.name should be ("foobar")
-    m.value should be (1.0)
+    m.value should be ("1.0")
     m.metricType should be ("c")
   }
 
@@ -47,7 +47,7 @@ class ClientSpec extends FlatSpec with Matchers with ScalaFutures {
     client.increment("foobar")
     val m = client.getQueue.poll
     m.name should be ("foobar")
-    m.value should be (1.0)
+    m.value should be ("1.0")
     m.metricType should be ("c")
   }
 
@@ -57,7 +57,7 @@ class ClientSpec extends FlatSpec with Matchers with ScalaFutures {
     client.increment("foobar")
     val m = client.getQueue.poll
     m.name should be ("foobar")
-    m.value should be (1.0)
+    m.value should be ("1.0")
     m.metricType should be ("c")
   }
 
@@ -67,7 +67,7 @@ class ClientSpec extends FlatSpec with Matchers with ScalaFutures {
     client.histogram("foobar", 1.0)
     val m = client.getQueue.poll
     m.name should be ("foobar")
-    m.value should be (1.0)
+    m.value should be ("1.0")
     m.metricType should be ("h")
   }
 
@@ -77,7 +77,17 @@ class ClientSpec extends FlatSpec with Matchers with ScalaFutures {
     client.meter("foobar", 1.0)
     val m = client.getQueue.poll
     m.name should be ("foobar")
-    m.value should be (1.0)
+    m.value should be ("1.0")
     m.metricType should be ("m")
+  }
+
+  it should "deal with sets" in {
+    val client = new Client(sender = new TestSender())
+
+    client.set("foobar", "fart")
+    val m = client.getQueue.poll
+    m.name should be ("foobar")
+    m.value should be ("fart")
+    m.metricType should be ("s")
   }
 }
