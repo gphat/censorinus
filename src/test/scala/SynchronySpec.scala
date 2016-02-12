@@ -8,7 +8,7 @@ class SynchronySpec extends FlatSpec with Matchers {
     val s = new TestSender()
     val client = new Client(encoder = Encoder, sender = s)
 
-    client.gauge("foobar", 1.0)
+    client.enqueue(Metric(name = "foobar", value = "1.0", metricType = "g"))
     s.getBuffer.size should be (0) // Won't be there yet
     Thread.sleep(110) // Give it a bit more than 100ms to send
     val m = s.getBuffer(0)
@@ -19,7 +19,7 @@ class SynchronySpec extends FlatSpec with Matchers {
     val s = new TestSender()
     val client = new Client(encoder = Encoder, sender = s, asynchronous = false)
 
-    client.counter("foobar", 1.0)
+    client.enqueue(Metric(name = "foobar", value = "1.0", metricType = "g"))
     val m = s.getBuffer(0)
     m should include ("foobar")
   }

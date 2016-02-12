@@ -61,7 +61,7 @@ class Client(
     */
   def getQueue = queue
 
-  protected[censorinus] def enqueue(metric: Metric, sampleRate: Double = defaultSampleRate) = {
+  def enqueue(metric: Metric, sampleRate: Double = defaultSampleRate) = {
     if(sampleRate == 1.0 || Random.nextDouble <= sampleRate) {
       if(asynchronous) {
         // Queue it up! Leave encoding for later so we back as soon as we can.
