@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.org/gphat/censorinus.svg?branch=master)](https://travis-ci.org/gphat/censorinus)
 
-Censorinus is a Scala runtime metrics client with multiple personalities.
+Censorinus is a Scala \*StatsD client with multiple personalities.
 
 # Features
 
