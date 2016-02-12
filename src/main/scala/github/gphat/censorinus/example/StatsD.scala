@@ -5,7 +5,7 @@ import github.gphat.censorinus.StatsDClient
 import java.util.UUID
 import scala.util.Random
 
-object Sender {
+object StatsD {
 
   def main(args: Array[String]): Unit = {
     println(args)
