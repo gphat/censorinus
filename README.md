@@ -11,6 +11,16 @@ Censorinus is a Scala runtime metrics client with multiple personalities.
 * DogStatsD Compatibility
 * UDP only, for now.
 
+# Using It
+
+```scala
+// Add the Dep
+libraryDependencies += "censorinus" %% "censorinus" % "1.0.0"
+
+// And a the resolver
+resolvers += "gphat" at "https://raw.github.com/gphat/mvn-repo/master/releases/",
+```
+
 # Examples
 
 ## StatsD
