@@ -8,6 +8,7 @@ Censorinus is a StatsD client with multiple personalities.
 * Client-side sampling, i.e. don't send it to across the network to reduce traffic
 * Asynchronous or Synchronous, your call!
 * StatsD Compatibility
+* DogStatsD Compatibility
 * More coming!
 
 # Example
@@ -66,4 +67,8 @@ number.
 
 # StatsD Compatibility & Features
 
-Censorinus is compatibile with the StatsD specification as defined [here](https://github.com/etsy/statsd/blob/master/docs/metric_types.md).
+Censorinus is compatible with the StatsD specification as defined [here](https://github.com/etsy/statsd/blob/master/docs/metric_types.md).
+
+# DogStatsD Compatibility & Features
+
+Censorinus is compatible with the DogStatsD specification as defined [here](http://docs.datadoghq.com/guides/dogstatsd/#datagram-format).
