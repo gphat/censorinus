@@ -77,6 +77,11 @@ a high penalty!
 val c = new Client(asynchronous = false)
 ```
 
+Note that for asynchronous use there is a ScheduledThreadExecutor fired up. You
+can call `c.shutdown` to forcibly end things. The threads in this executor are
+flagged as deaemon threads so ending your program will cause any unsent metrics
+to be lost.
+
 # Sampling
 
 All methods have a `sampleRate` parameter that will be used randomly determine
