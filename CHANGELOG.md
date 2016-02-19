@@ -1,10 +1,12 @@
 # Changelog
 
-## [1.0.1] - 2016-02-19
+## [1.0.1] - Unreleased
 
 ### Fixed
 * Double values being emitted as scientific notation and therefore being invalid StatsD datagrams
-* Sample rates not being delimited by a pipe and therefore being invalid StatsD datagrams
+
+### Added
+* Test to ensure DogStatsD datagrams are correctly formatted. Fixes #3
 
 ## [1.0.0] - 2016-02-11
 

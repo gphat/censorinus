@@ -1,80 +1,46 @@
 import org.scalatest._
-import scala.collection.mutable.ArrayBuffer
-import github.gphat.censorinus.{Metric,MetricSender,DogStatsDClient}
-import github.gphat.censorinus.statsd.Encoder
+import github.gphat.censorinus.Metric
+import github.gphat.censorinus.dogstatsd.Encoder
 
-class DogStatsDClientSpec extends FlatSpec with Matchers {
+class DogStatsDEncoderSpec extends FlatSpec with Matchers {
 
-  val s = new TestSender()
-  val client = new DogStatsDClient(flushInterval = 1000)
+  "DogStatsD Encoder" should "encode gauges" in {
 
-  "DogStatsDClient" should "deal with gauges" in {
-    client.gauge("foobar", value = 1.0, tags = Seq("foo:bar"))
-    val m = client.getQueue.poll
-    m.name should be ("foobar")
-    m.value should be ("1.0")
-    m.metricType should be ("g")
-    m.tags should be (Seq("foo:bar"))
+    val g = Metric(name = "foobar", value = "1.0", metricType = "g")
+    Encoder.encode(g) should be ("foobar:1.0|g|")
   }
 
-  it should "deal with counters" in {
-    client.counter("foobar", 1.0, tags = Seq("foo:bar"))
-    val m = client.getQueue.poll
-    m.name should be ("foobar")
-    m.value should be ("1.0")
-    m.metricType should be ("c")
-    m.tags should be (Seq("foo:bar"))
+  it should "encode counters" in {
+    val m = Metric(name = "foobar", value = "1.0", metricType = "c")
+    Encoder.encode(m) should be ("foobar:1.0|c|")
+
+    // Counter with optional sample rate
+    val m1 = Metric(name = "foobar", value = "1.0", metricType = "c", sampleRate = 0.5)
+    Encoder.encode(m1) should be ("foobar:1.0|c|@0.5")
   }
 
-  it should "deal with increments" in {
-    client.increment("foobar", tags = Seq("foo:bar"))
-    val m = client.getQueue.poll
-    m.name should be ("foobar")
-    m.value should be ("1.0")
-    m.metricType should be ("c")
-    m.tags should be (Seq("foo:bar"))
+  it should "encode timers" in {
+    val m = Metric(name = "foobar", value = "1.0", metricType = "ms")
+    Encoder.encode(m) should be ("foobar:1.0|ms|")
   }
 
-  it should "deal with decrements" in {
-    client.increment("foobar", tags = Seq("foo:bar"))
-    val m = client.getQueue.poll
-    m.name should be ("foobar")
-    m.value should be ("1.0")
-    m.metricType should be ("c")
-    m.tags should be (Seq("foo:bar"))
+  it should "encode histograms" in {
+    val m = Metric(name = "foobar", value = "1.0", metricType = "h")
+    Encoder.encode(m) should be ("foobar:1.0|h|")
   }
 
-  it should "deal with histograms" in {
-    client.histogram("foobar", 1.0, tags = Seq("foo:bar"))
-    val m = client.getQueue.poll
-    m.name should be ("foobar")
-    m.value should be ("1.0")
-    m.metricType should be ("h")
-    m.tags should be (Seq("foo:bar"))
+  it should "encode meters" in {
+    val m = Metric(name = "foobar", value = "1.0", metricType = "m")
+    Encoder.encode(m) should be ("foobar:1.0|m|")
   }
 
-  it should "deal with meters" in {
-    client.meter("foobar", 1.0, tags = Seq("foo:bar"))
-    val m = client.getQueue.poll
-    m.name should be ("foobar")
-    m.value should be ("1.0")
-    m.metricType should be ("m")
-    m.tags should be (Seq("foo:bar"))
+  it should "encode sets" in {
+    val m = Metric(name = "foobar", value = "fart", metricType = "s")
+    Encoder.encode(m) should be ("foobar:fart|s|")
   }
 
-  it should "deal with sets" in {
-    client.set("foobar", "fart", tags = Seq("foo:bar"))
-    val m = client.getQueue.poll
-    m.name should be ("foobar")
-    m.value should be ("fart")
-    m.metricType should be ("s")
-    m.tags should be (Seq("foo:bar"))
-  }
-
-  it should "deal with big doubles" in {
-    client.meter("foobar", 1.01010101010101010101)
-    val m = client.getQueue.poll
-    m.name should be ("foobar")
-    m.value should be ("1.01010101")
+  it should "encode counters with sample rate" in {
+    val m = Metric(name = "foobar", value = "1.0", sampleRate = 0.5, metricType = "c")
+    Encoder.encode(m) should be ("foobar:1.0|c|@0.5")
   }
 }

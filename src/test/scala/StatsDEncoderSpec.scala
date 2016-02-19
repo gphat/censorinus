@@ -38,4 +38,9 @@ class StatsDEncoderSpec extends FlatSpec with Matchers {
     val m = Metric(name = "foobar", value = "fart", metricType = "s")
     Encoder.encode(m) should be ("foobar:fart|s")
   }
+
+  it should "encode counters with sample rate" in {
+    val m = Metric(name = "foobar", value = "1.0", sampleRate = 0.5, metricType = "c")
+    Encoder.encode(m) should be ("foobar:1.0|c@0.5")
+  }
 }
