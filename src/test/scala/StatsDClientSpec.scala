@@ -63,4 +63,11 @@ class StatsDClientSpec extends FlatSpec with Matchers {
     m.value should be ("fart")
     m.metricType should be ("s")
   }
+
+  it should "deal with big doubles" in {
+    client.meter("foobar", 1.01010101010101010101)
+    val m = client.getQueue.poll
+    m.name should be ("foobar")
+    m.value should be ("1.01010101")
+  }
 }

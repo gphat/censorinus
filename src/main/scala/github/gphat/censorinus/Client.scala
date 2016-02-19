@@ -1,5 +1,6 @@
 package github.gphat.censorinus
 
+import java.text.DecimalFormat
 import java.util.concurrent._
 import scala.util.Random
 
@@ -18,6 +19,9 @@ class Client(
   flushInterval: Long = 100L,
   asynchronous: Boolean = true
 ) {
+
+  val df = new DecimalFormat("0.0")
+  df.setMaximumFractionDigits(8)
 
   val queue = new ConcurrentLinkedQueue[Metric]()
   // This is an Option[Executor] to allow for NOT sending things.

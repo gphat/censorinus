@@ -70,4 +70,11 @@ class DogStatsDClientSpec extends FlatSpec with Matchers {
     m.metricType should be ("s")
     m.tags should be (Seq("foo:bar"))
   }
+
+  it should "deal with big doubles" in {
+    client.meter("foobar", 1.01010101010101010101)
+    val m = client.getQueue.poll
+    m.name should be ("foobar")
+    m.value should be ("1.01010101")
+  }
 }

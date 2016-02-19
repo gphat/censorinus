@@ -18,26 +18,26 @@ object Encoder extends MetricEncoder {
   }
 
   def encodeCounter(metric: Metric): String = {
-    s"${metric.name}:${metric.value.toString}|c|${encodeSampleRate(metric)}${encodeTags(metric)}"
+    s"${metric.name}:${metric.value}|c|${encodeSampleRate(metric)}${encodeTags(metric)}"
   }
 
   def encodeGauge(metric: Metric): String = {
-    s"${metric.name}:${metric.value.toString}|g|${encodeTags(metric)}"
+    s"${metric.name}:${metric.value}|g|${encodeTags(metric)}"
   }
 
   def encodeHistogram(metric: Metric): String = {
-    s"${metric.name}:${metric.value.toString}|h|${encodeTags(metric)}"
+    s"${metric.name}:${metric.value}|h|${encodeTags(metric)}"
   }
 
   def encodeMeter(metric: Metric): String = {
-    s"${metric.name}:${metric.value.toString}|m|${encodeTags(metric)}"
+    s"${metric.name}:${metric.value}|m|${encodeTags(metric)}"
   }
 
   def encodeSampleRate(metric: Metric): String = {
     if(metric.sampleRate == 1.0) {
       ""
     } else {
-      s"@${metric.sampleRate.toString}"
+      s"@${df.format(metric.sampleRate)}"
     }
   }
 
