@@ -7,8 +7,5 @@ import github.gphat.censorinus._
   */
 trait MetricEncoder {
 
-  val df = new DecimalFormat("0.0")
-  df.setMaximumFractionDigits(8)
-
   def encode(metric: Metric): String
 }

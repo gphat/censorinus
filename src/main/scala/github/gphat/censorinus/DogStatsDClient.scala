@@ -13,19 +13,22 @@ import scala.util.Random
   * @param defaultSampleRate A sample rate default to be used for all metric methods. Defaults to 1.0
   * @param flushInterval How often in milliseconds to flush the local buffer to keep things async. Defaults to 100ms
   * @param asynchronous True if you want the client to asynch, false for blocking!
+  * @param floatFormat Allows control of the precision of the double output via strings from [[java.util.Formatter]]. Defaults to "%.8f".
   */
 class DogStatsDClient(
   hostname: String = "localhost",
   port: Int = 8125,
   defaultSampleRate: Double = 1.0,
   flushInterval: Long = 100L,
-  asynchronous: Boolean = true
+  asynchronous: Boolean = true,
+  floatFormat: String = "%.8f"
 ) extends Client(
   sender = new UDPSender(hostname = hostname, port = port),
   encoder = Encoder,
   defaultSampleRate = defaultSampleRate,
   flushInterval = flushInterval,
-  asynchronous = asynchronous
+  asynchronous = asynchronous,
+  floatFormat = floatFormat
 ) {
   /** Emit a counter metric.
     * @param name The name of the metric
@@ -33,7 +36,7 @@ class DogStatsDClient(
     * @param sampleRate The rate at which to sample this metric.
     */
   def counter(name: String, value: Double, sampleRate: Double = defaultSampleRate, tags: Seq[String] = Seq.empty) = enqueue(
-    Metric(name = name, value = df.format(value), sampleRate = sampleRate, metricType = "c", tags = tags)
+    Metric(name = name, value = floatFormat.format(value), sampleRate = sampleRate, metricType = "c", tags = tags)
   )
 
   /** Emit a decrement metric.
@@ -42,7 +45,7 @@ class DogStatsDClient(
     * @param sampleRate The rate at which to sample this metric.
     */
   def decrement(name: String, value: Double = 1, sampleRate: Double = defaultSampleRate, tags: Seq[String] = Seq.empty) = enqueue(
-    Metric(name = name, value = df.format(value), sampleRate = sampleRate, metricType = "c", tags = tags)
+    Metric(name = name, value = floatFormat.format(value), sampleRate = sampleRate, metricType = "c", tags = tags)
   )
 
   /** Emit a gauge metric.
@@ -51,7 +54,7 @@ class DogStatsDClient(
     * @param sampleRate The rate at which to sample this metric.
     */
   def gauge(name: String, value: Double, sampleRate: Double = defaultSampleRate, tags: Seq[String] = Seq.empty) = enqueue(
-    Metric(name = name, value = df.format(value), sampleRate = sampleRate, metricType = "g", tags = tags)
+    Metric(name = name, value = floatFormat.format(value), sampleRate = sampleRate, metricType = "g", tags = tags)
   )
 
   /** Emit a histogram metric.
@@ -60,7 +63,7 @@ class DogStatsDClient(
     * @param sampleRate The rate at which to sample this metric.
     */
   def histogram(name: String, value: Double, sampleRate: Double = defaultSampleRate, tags: Seq[String] = Seq.empty) = enqueue(
-    Metric(name = name, value = df.format(value), sampleRate = sampleRate, metricType = "h", tags = tags)
+    Metric(name = name, value = floatFormat.format(value), sampleRate = sampleRate, metricType = "h", tags = tags)
   )
 
   /** Emit an increment metric.
@@ -69,7 +72,7 @@ class DogStatsDClient(
     * @param sampleRate The rate at which to sample this metric.
     */
   def increment(name: String, value: Double = 1, sampleRate: Double = defaultSampleRate, tags: Seq[String] = Seq.empty) = enqueue(
-    Metric(name = name, value = df.format(value), sampleRate = sampleRate, metricType = "c", tags = tags)
+    Metric(name = name, value = floatFormat.format(value), sampleRate = sampleRate, metricType = "c", tags = tags)
   )
 
   /** Emit a meter metric.
@@ -78,7 +81,7 @@ class DogStatsDClient(
     * @param sampleRate The rate at which to sample this metric.
     */
   def meter(name: String, value: Double, sampleRate: Double = defaultSampleRate, tags: Seq[String] = Seq.empty) = enqueue(
-    Metric(name = name, value = df.format(value), sampleRate = sampleRate, metricType = "m", tags = tags)
+    Metric(name = name, value = floatFormat.format(value), sampleRate = sampleRate, metricType = "m", tags = tags)
   )
 
   /** Emit a set metric.
@@ -96,6 +99,6 @@ class DogStatsDClient(
     * @param sampleRate The rate at which to sample this metric.
     */
   def timer(name: String, milliseconds: Double, sampleRate: Double = defaultSampleRate, tags: Seq[String] = Seq.empty) = enqueue(
-    Metric(name = name, value = df.format(milliseconds), sampleRate = sampleRate, metricType = "ms", tags = tags)
+    Metric(name = name, value = floatFormat.format(milliseconds), sampleRate = sampleRate, metricType = "ms", tags = tags)
   )
 }

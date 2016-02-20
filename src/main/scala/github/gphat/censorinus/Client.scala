@@ -11,17 +11,16 @@ import scala.util.Random
   * @param defaultSampleRate A sample rate default to be used for all metric methods. Defaults to 1.0
   * @param flushInterval How often in milliseconds to flush the local buffer to keep things async. Defaults to 100ms
   * @param asynchronous True if you want the client to asynch, false for blocking!
+  * @param floatFormat Allows control of the precision of the double output via strings from [[java.util.Formatter]]. Defaults to "%.8f".
   */
 class Client(
   encoder: MetricEncoder,
   sender: MetricSender,
   val defaultSampleRate: Double = 1.0,
   flushInterval: Long = 100L,
-  asynchronous: Boolean = true
+  asynchronous: Boolean = true,
+  floatFormat: String = "%.8f"
 ) {
-
-  val df = new DecimalFormat("0.0")
-  df.setMaximumFractionDigits(8)
 
   val queue = new ConcurrentLinkedQueue[Metric]()
   // This is an Option[Executor] to allow for NOT sending things.

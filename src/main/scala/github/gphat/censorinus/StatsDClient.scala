@@ -14,19 +14,22 @@ import scala.util.Random
   * @param defaultSampleRate A sample rate default to be used for all metric methods. Defaults to 1.0
   * @param flushInterval How often in milliseconds to flush the local buffer to keep things async. Defaults to 100ms
   * @param asynchronous True if you want the client to asynch, false for blocking!
+  * @param floatFormat Allows control of the precision of the double output via strings from [[java.util.Formatter]]. Defaults to "%.8f".
   */
 class StatsDClient(
   hostname: String = "localhost",
   port: Int = 8125,
   defaultSampleRate: Double = 1.0,
   flushInterval: Long = 100L,
-  asynchronous: Boolean = true
+  asynchronous: Boolean = true,
+  floatFormat: String = "%.8f"
 ) extends Client(
   sender = new UDPSender(hostname = hostname, port = port),
   encoder = Encoder,
   defaultSampleRate = defaultSampleRate,
   flushInterval = flushInterval,
-  asynchronous = asynchronous
+  asynchronous = asynchronous,
+  floatFormat = floatFormat
 ) {
 
   /** Emit a counter metric.
@@ -35,7 +38,7 @@ class StatsDClient(
     * @param sampleRate The rate at which to sample this metric.
     */
   def counter(name: String, value: Double, sampleRate: Double = defaultSampleRate) = enqueue(
-    Metric(name = name, value = df.format(value), sampleRate = sampleRate, metricType = "c")
+    Metric(name = name, value = floatFormat.format(value), sampleRate = sampleRate, metricType = "c")
   )
 
   /** Emit a decrement metric.
@@ -44,7 +47,7 @@ class StatsDClient(
     * @param sampleRate The rate at which to sample this metric.
     */
   def decrement(name: String, value: Double = 1, sampleRate: Double = defaultSampleRate) = enqueue(
-    Metric(name = name, value = df.format(value), sampleRate = sampleRate, metricType = "c")
+    Metric(name = name, value = floatFormat.format(value), sampleRate = sampleRate, metricType = "c")
   )
 
   /** Emit a gauge metric.
@@ -53,7 +56,7 @@ class StatsDClient(
     * @param sampleRate The rate at which to sample this metric.
     */
   def gauge(name: String, value: Double, sampleRate: Double = defaultSampleRate) = enqueue(
-    Metric(name = name, value = df.format(value), sampleRate = sampleRate, metricType = "g")
+    Metric(name = name, value = floatFormat.format(value), sampleRate = sampleRate, metricType = "g")
   )
 
   /** Emit a histogram metric.
@@ -62,7 +65,7 @@ class StatsDClient(
     * @param sampleRate The rate at which to sample this metric.
     */
   def histogram(name: String, value: Double, sampleRate: Double = defaultSampleRate) = enqueue(
-    Metric(name = name, value = df.format(value), sampleRate = sampleRate, metricType = "h")
+    Metric(name = name, value = floatFormat.format(value), sampleRate = sampleRate, metricType = "h")
   )
 
   /** Emit an increment metric.
@@ -71,7 +74,7 @@ class StatsDClient(
     * @param sampleRate The rate at which to sample this metric.
     */
   def increment(name: String, value: Double = 1, sampleRate: Double = defaultSampleRate) = enqueue(
-    Metric(name = name, value = df.format(value), sampleRate = sampleRate, metricType = "c")
+    Metric(name = name, value = floatFormat.format(value), sampleRate = sampleRate, metricType = "c")
   )
 
   /** Emit a meter metric.
@@ -80,7 +83,7 @@ class StatsDClient(
     * @param sampleRate The rate at which to sample this metric.
     */
   def meter(name: String, value: Double, sampleRate: Double = defaultSampleRate) = enqueue(
-    Metric(name = name, value = df.format(value), sampleRate = sampleRate, metricType = "m")
+    Metric(name = name, value = floatFormat.format(value), sampleRate = sampleRate, metricType = "m")
   )
 
   /** Emit e a set metric.
@@ -98,6 +101,6 @@ class StatsDClient(
     * @param sampleRate The rate at which to sample this metric.
     */
   def timer(name: String, milliseconds: Double, sampleRate: Double = defaultSampleRate) = enqueue(
-    Metric(name = name, value = df.format(milliseconds), sampleRate = sampleRate, metricType = "ms")
+    Metric(name = name, value = floatFormat.format(milliseconds), sampleRate = sampleRate, metricType = "ms")
   )
 }

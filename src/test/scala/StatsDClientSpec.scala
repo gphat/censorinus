@@ -12,7 +12,7 @@ class StatsDClientSpec extends FlatSpec with Matchers {
     client.gauge("foobar", 1.0)
     val m = client.getQueue.poll
     m.name should be ("foobar")
-    m.value should be ("1.0")
+    m.value should be ("1.00000000")
     m.metricType should be ("g")
   }
 
@@ -20,7 +20,7 @@ class StatsDClientSpec extends FlatSpec with Matchers {
     client.counter("foobar", 1.0)
     val m = client.getQueue.poll
     m.name should be ("foobar")
-    m.value should be ("1.0")
+    m.value should be ("1.00000000")
     m.metricType should be ("c")
   }
 
@@ -28,7 +28,7 @@ class StatsDClientSpec extends FlatSpec with Matchers {
     client.increment("foobar")
     val m = client.getQueue.poll
     m.name should be ("foobar")
-    m.value should be ("1.0")
+    m.value should be ("1.00000000")
     m.metricType should be ("c")
   }
 
@@ -36,7 +36,7 @@ class StatsDClientSpec extends FlatSpec with Matchers {
     client.increment("foobar")
     val m = client.getQueue.poll
     m.name should be ("foobar")
-    m.value should be ("1.0")
+    m.value should be ("1.00000000")
     m.metricType should be ("c")
   }
 
@@ -44,7 +44,7 @@ class StatsDClientSpec extends FlatSpec with Matchers {
     client.histogram("foobar", 1.0)
     val m = client.getQueue.poll
     m.name should be ("foobar")
-    m.value should be ("1.0")
+    m.value should be ("1.00000000")
     m.metricType should be ("h")
   }
 
@@ -52,7 +52,7 @@ class StatsDClientSpec extends FlatSpec with Matchers {
     client.meter("foobar", 1.0)
     val m = client.getQueue.poll
     m.name should be ("foobar")
-    m.value should be ("1.0")
+    m.value should be ("1.00000000")
     m.metricType should be ("m")
   }
 

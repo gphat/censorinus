@@ -16,7 +16,7 @@ class StatsDEncoderSpec extends FlatSpec with Matchers {
 
     // Counter with optional sample rate
     val m1 = Metric(name = "foobar", value = "1.0", metricType = "c", sampleRate = 0.5)
-    Encoder.encode(m1) should be ("foobar:1.0|c@0.5")
+    Encoder.encode(m1) should be ("foobar:1.0|c@0.5000")
   }
 
   it should "encode timers" in {
@@ -41,6 +41,6 @@ class StatsDEncoderSpec extends FlatSpec with Matchers {
 
   it should "encode counters with sample rate" in {
     val m = Metric(name = "foobar", value = "1.0", sampleRate = 0.5, metricType = "c")
-    Encoder.encode(m) should be ("foobar:1.0|c@0.5")
+    Encoder.encode(m) should be ("foobar:1.0|c@0.5000")
   }
 }

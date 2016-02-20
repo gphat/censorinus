@@ -37,7 +37,7 @@ object Encoder extends MetricEncoder {
     if(metric.sampleRate == 1.0) {
       ""
     } else {
-      s"@${df.format(metric.sampleRate)}"
+      s"@${"%.4f".format(metric.sampleRate)}"
     }
   }
 
