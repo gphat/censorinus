@@ -18,31 +18,31 @@ object Encoder extends MetricEncoder {
   }
 
   def encodeCounter(metric: Metric): String = {
-    s"${metric.name}:${metric.value}|c|${encodeSampleRate(metric)}${encodeTags(metric)}"
+    s"${metric.name}:${metric.value}|c${encodeSampleRate(metric)}${encodeTags(metric)}"
   }
 
   def encodeGauge(metric: Metric): String = {
-    s"${metric.name}:${metric.value}|g|${encodeTags(metric)}"
+    s"${metric.name}:${metric.value}|g${encodeTags(metric)}"
   }
 
   def encodeHistogram(metric: Metric): String = {
-    s"${metric.name}:${metric.value}|h|${encodeTags(metric)}"
+    s"${metric.name}:${metric.value}|h${encodeTags(metric)}"
   }
 
   def encodeMeter(metric: Metric): String = {
-    s"${metric.name}:${metric.value}|m|${encodeTags(metric)}"
+    s"${metric.name}:${metric.value}|m${encodeTags(metric)}"
   }
 
   def encodeSampleRate(metric: Metric): String = {
     if(metric.sampleRate == 1.0) {
       ""
     } else {
-      s"@${"%.4f".format(metric.sampleRate)}"
+      s"|@${"%.4f".format(metric.sampleRate)}"
     }
   }
 
   def encodeSet(metric: Metric): String = {
-    s"${metric.name}:${metric.value}|s|${encodeTags(metric)}"
+    s"${metric.name}:${metric.value}|s${encodeTags(metric)}"
   }
 
   def encodeTags(metric: Metric): String = {
@@ -50,11 +50,11 @@ object Encoder extends MetricEncoder {
     if(metric.tags.isEmpty) {
       ""
     } else {
-      "#" + metric.tags.mkString(",")
+      "|#" + metric.tags.mkString(",")
     }
   }
 
   def encodeTimer(metric: Metric): String = {
-    s"${metric.name}:${metric.value.toString}|ms|${encodeTags(metric)}"
+    s"${metric.name}:${metric.value.toString}|ms${encodeTags(metric)}"
   }
 }
