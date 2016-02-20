@@ -13,6 +13,7 @@ class SynchronySpec extends FlatSpec with Matchers {
     Thread.sleep(110) // Give it a bit more than 100ms to send
     val m = s.getBuffer(0)
     m should include ("foobar")
+    client.shutdown
   }
 
   it should "be synchronous" in {
@@ -22,5 +23,6 @@ class SynchronySpec extends FlatSpec with Matchers {
     client.enqueue(Metric(name = "foobar", value = "1.0", metricType = "g"))
     val m = s.getBuffer(0)
     m should include ("foobar")
+    client.shutdown
   }
 }

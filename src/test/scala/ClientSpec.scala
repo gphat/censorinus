@@ -15,13 +15,13 @@ class TestSender extends MetricSender {
 
 class ClientSpec extends FlatSpec with Matchers {
 
-  val client = new Client(encoder = Encoder, sender = new TestSender())
-
   "ClientSpec" should "deal with gauges" in {
+    val client = new Client(encoder = Encoder, sender = new TestSender())
     client.enqueue(Metric(name = "foobar", value = "1.0", metricType = "g"))
     val m = client.getQueue.poll
     m.name should be ("foobar")
     m.value should be ("1.0")
     m.metricType should be ("g")
+    client.shutdown
   }
 }
