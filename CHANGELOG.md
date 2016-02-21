@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.0.1] - Unreleased
+## [1.0.1] - 2016-02-20
 
 ### Fixed
 * Double values being emitted as scientific notation and therefore being invalid StatsD datagrams
