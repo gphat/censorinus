@@ -9,6 +9,7 @@
 
 ### Added
 * Test to ensure DogStatsD datagrams are correctly formatted. Fixes #3
+* Added optional prefix argument for clients to add to the names of metrics. Fixes #1
 
 ## [1.0.0] - 2016-02-11
 
