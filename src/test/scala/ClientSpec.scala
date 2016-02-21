@@ -10,6 +10,8 @@ class TestSender extends MetricSender {
     buffer.append(message)
   }
 
+  def shutdown: Unit = ()
+
   def getBuffer = buffer
 }
 

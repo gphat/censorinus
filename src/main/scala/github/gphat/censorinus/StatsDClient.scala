@@ -11,6 +11,7 @@ import scala.util.Random
   * @constructor Creates a new client instance
   * @param hostname the host to send metrics to, defaults to localhost
   * @param port the port to send metrics to, defaults to 8125
+  * @param prefix A prefix to add to all metric names. A period will be added to the end, resulting in prefix.metricname.
   * @param defaultSampleRate A sample rate default to be used for all metric methods. Defaults to 1.0
   * @param flushInterval How often in milliseconds to flush the local buffer to keep things async. Defaults to 100ms
   * @param asynchronous True if you want the client to asynch, false for blocking!
@@ -19,6 +20,7 @@ import scala.util.Random
 class StatsDClient(
   hostname: String = "localhost",
   port: Int = 8125,
+  prefix: String = "",
   defaultSampleRate: Double = 1.0,
   flushInterval: Long = 100L,
   asynchronous: Boolean = true,
@@ -26,6 +28,7 @@ class StatsDClient(
 ) extends Client(
   sender = new UDPSender(hostname = hostname, port = port),
   encoder = Encoder,
+  prefix = prefix,
   defaultSampleRate = defaultSampleRate,
   flushInterval = flushInterval,
   asynchronous = asynchronous,
@@ -38,7 +41,7 @@ class StatsDClient(
     * @param sampleRate The rate at which to sample this metric.
     */
   def counter(name: String, value: Double, sampleRate: Double = defaultSampleRate) = enqueue(
-    Metric(name = name, value = floatFormat.format(value), sampleRate = sampleRate, metricType = "c")
+    Metric(name = makeName(name), value = floatFormat.format(value), sampleRate = sampleRate, metricType = "c")
   )
 
   /** Emit a decrement metric.
@@ -47,7 +50,7 @@ class StatsDClient(
     * @param sampleRate The rate at which to sample this metric.
     */
   def decrement(name: String, value: Double = 1, sampleRate: Double = defaultSampleRate) = enqueue(
-    Metric(name = name, value = floatFormat.format(value), sampleRate = sampleRate, metricType = "c")
+    Metric(name = makeName(name), value = floatFormat.format(value), sampleRate = sampleRate, metricType = "c")
   )
 
   /** Emit a gauge metric.
@@ -56,7 +59,7 @@ class StatsDClient(
     * @param sampleRate The rate at which to sample this metric.
     */
   def gauge(name: String, value: Double, sampleRate: Double = defaultSampleRate) = enqueue(
-    Metric(name = name, value = floatFormat.format(value), sampleRate = sampleRate, metricType = "g")
+    Metric(name = makeName(name), value = floatFormat.format(value), sampleRate = sampleRate, metricType = "g")
   )
 
   /** Emit a histogram metric.
@@ -65,7 +68,7 @@ class StatsDClient(
     * @param sampleRate The rate at which to sample this metric.
     */
   def histogram(name: String, value: Double, sampleRate: Double = defaultSampleRate) = enqueue(
-    Metric(name = name, value = floatFormat.format(value), sampleRate = sampleRate, metricType = "h")
+    Metric(name = makeName(name), value = floatFormat.format(value), sampleRate = sampleRate, metricType = "h")
   )
 
   /** Emit an increment metric.
@@ -74,7 +77,7 @@ class StatsDClient(
     * @param sampleRate The rate at which to sample this metric.
     */
   def increment(name: String, value: Double = 1, sampleRate: Double = defaultSampleRate) = enqueue(
-    Metric(name = name, value = floatFormat.format(value), sampleRate = sampleRate, metricType = "c")
+    Metric(name = makeName(name), value = floatFormat.format(value), sampleRate = sampleRate, metricType = "c")
   )
 
   /** Emit a meter metric.
@@ -83,7 +86,7 @@ class StatsDClient(
     * @param sampleRate The rate at which to sample this metric.
     */
   def meter(name: String, value: Double, sampleRate: Double = defaultSampleRate) = enqueue(
-    Metric(name = name, value = floatFormat.format(value), sampleRate = sampleRate, metricType = "m")
+    Metric(name = makeName(name), value = floatFormat.format(value), sampleRate = sampleRate, metricType = "m")
   )
 
   /** Emit e a set metric.
@@ -92,7 +95,7 @@ class StatsDClient(
    * @param sampleRate The rate at which to sample the metric
    */
   def set(name: String, value: String) = enqueue(
-    Metric(name = name, value = value, metricType = "s")
+    Metric(name = makeName(name), value = value, metricType = "s")
   )
 
   /** Emit a timer metric.
@@ -101,6 +104,6 @@ class StatsDClient(
     * @param sampleRate The rate at which to sample this metric.
     */
   def timer(name: String, milliseconds: Double, sampleRate: Double = defaultSampleRate) = enqueue(
-    Metric(name = name, value = floatFormat.format(milliseconds), sampleRate = sampleRate, metricType = "ms")
+    Metric(name = makeName(name), value = floatFormat.format(milliseconds), sampleRate = sampleRate, metricType = "ms")
   )
 }

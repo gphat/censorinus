@@ -14,4 +14,6 @@ class UDPSender(hostname: String = "localhost", port: Int = 8125) extends Metric
     println(message)
     clientSocket.write(ByteBuffer.wrap(message.getBytes(StandardCharsets.UTF_8)))
   }
+
+  def shutdown: Unit = clientSocket.close
 }

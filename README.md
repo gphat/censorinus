@@ -9,7 +9,7 @@ Censorinus is a Scala \*StatsD client with multiple personalities.
 * Asynchronous or Synchronous, your call!
 * StatsD Compatibility
 * DogStatsD Compatibility
-* UDP only, for now.
+* UDP only
 
 # Using It
 
