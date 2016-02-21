@@ -7,15 +7,15 @@ Censorinus is a Scala \*StatsD client with multiple personalities.
 * No dependencies, just boring Scala and Java stuff.
 * Client-side sampling, i.e. don't send it to across the network to reduce traffic.
 * Asynchronous or Synchronous, your call!
-* StatsD Compatibility
-* DogStatsD Compatibility
+* [StatsD Compatibility](https://github.com/etsy/statsd/blob/master/docs/metric_types.md)
+* [DogStatsD Compatibility](http://docs.datadoghq.com/guides/dogstatsd/#datagram-format)
 * UDP only
 
 # Using It
 
 ```scala
 // Add the Dep
-libraryDependencies += "censorinus" %% "censorinus" % "1.0.0"
+libraryDependencies += "censorinus" %% "censorinus" % "1.0.1"
 
 // And a the resolver
 resolvers += "gphat" at "https://raw.github.com/gphat/mvn-repo/master/releases/",
@@ -54,6 +54,16 @@ val c = new DogStatsDClient(host = "some.host", port = 8125)
 
 // Not gonna list 'em all since the methods are the same, but allow tags!
 c.counter(name = "foo.count", value = 2, tags = Seq("foo:bar"))
+```
+
+# Prefixes
+
+If all your metrics start with a common string like a service or team name then
+you can safe yourself by using prefixes when instantiating a client:
+
+```scala
+val c = new DogStatsDClient(host = "some.host", port = 8125, prefix = "mycoolapp")
+c.counter(name = "foo.count") // Resulting metric will be mycoolapp.foo.count
 ```
 
 # Asynchronous (default behavior)
