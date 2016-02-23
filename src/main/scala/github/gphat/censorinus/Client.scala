@@ -70,8 +70,9 @@ class Client(
     */
   def getQueue = queue
 
-  def enqueue(metric: Metric, sampleRate: Double = defaultSampleRate) = {
-    if(sampleRate == 1.0 || Random.nextDouble <= sampleRate) {
+  def enqueue(metric: Metric, sampleRate: Double = defaultSampleRate, bypassSampler: Boolean = false) = {
+
+    if(bypassSampler || sampleRate == 1.0 || Random.nextDouble <= sampleRate) {
       if(asynchronous) {
         // Queue it up! Leave encoding for later so we back as soon as we can.
         queue.offer(metric)

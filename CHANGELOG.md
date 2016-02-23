@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.2] - Unreleased
+
+## Fixed
+* Ahem… so client-side sampling wasn't really working. Sampling now works 100% better. There's a test to prove it!
+
+## Added
+* Ability to bypass the client-side sampler, but still send a sample rate. This is useful for folks doing their own sampler.
+
 ## [1.0.1] - 2016-02-20
 
 ### Fixed
