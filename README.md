@@ -21,12 +21,15 @@ libraryDependencies += "censorinus" %% "censorinus" % "1.0.1"
 resolvers += "gphat" at "https://raw.github.com/gphat/mvn-repo/master/releases/",
 ```
 
+You should create a single instance of a client reuse it throughout your
+application. It's thread-safe and all that shit! Note that unless you call
+`shutdown` on your client, it will keep it's datagram socket open forever.
+
 # Examples
 
 ## StatsD
 
 Censorinus is compatible with the StatsD specification as defined [here](https://github.com/etsy/statsd/blob/master/docs/metric_types.md).
-
 
 ```scala
 import github.gphat.censorinus.StatsDClient
