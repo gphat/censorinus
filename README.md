@@ -5,7 +5,7 @@ Censorinus is a Scala \*StatsD client with multiple personalities.
 # Features
 
 * No dependencies, just boring Scala and Java stuff.
-* Client-side sampling, i.e. don't send it to across the network to reduce traffic.
+* Client-side sampling, i.e. don't send it to across the network to reduce traffic. Or you can bypass it and still supply a sample rate if you wanna do it on your end.
 * Asynchronous or Synchronous, your call!
 * [StatsD Compatibility](https://github.com/etsy/statsd/blob/master/docs/metric_types.md)
 * [DogStatsD Compatibility](http://docs.datadoghq.com/guides/dogstatsd/#datagram-format)
@@ -110,6 +110,13 @@ c.counter(name = "foo.count", value = 2, sampleRate = 0.5)
 Note that StatsD's counters support an additional sample rate argument, since
 counters can be multiplied by the sample rate downstream to give an accurate
 number.
+
+## Bypassing
+
+You can also supply a `bypassSampler = true` argument to any of the client's
+methods to send the metric regardless. Note that the sample rate will *also* be
+sent. This is a convenience method to allow you to do your own sampling and pass
+that along to this library.
 
 # Notes
 
