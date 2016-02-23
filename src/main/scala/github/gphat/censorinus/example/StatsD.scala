@@ -8,7 +8,6 @@ import scala.util.Random
 object StatsD {
 
   def main(args: Array[String]): Unit = {
-    println(args)
     val client = new StatsDClient(asynchronous=false)
 
     client.gauge("foo.bar.baz_gauge", 10.0)

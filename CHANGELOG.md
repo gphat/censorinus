@@ -3,6 +3,7 @@
 ## [1.0.2] - Unreleased
 
 ## Fixed
+* Stopped `println`ing every Metric send via UDP. So chatty!
 * Ahem… so client-side sampling wasn't really working. Sampling now works 100% better. There's a test to prove it!
 
 ## Added

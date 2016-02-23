@@ -11,7 +11,6 @@ class UDPSender(hostname: String = "localhost", port: Int = 8125) extends Metric
   clientSocket.connect(new InetSocketAddress(hostname, port));
 
   def send(message: String): Unit = {
-    println(message)
     clientSocket.write(ByteBuffer.wrap(message.getBytes(StandardCharsets.UTF_8)))
   }
 

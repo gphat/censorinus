@@ -6,6 +6,8 @@ import github.gphat.censorinus.statsd.Encoder
 class TestSender extends MetricSender {
   val buffer = new ArrayBuffer[String]()
 
+  def clear = buffer.clear
+
   def send(message: String): Unit = {
     buffer.append(message)
   }
