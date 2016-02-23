@@ -15,7 +15,7 @@ Censorinus is a Scala \*StatsD client with multiple personalities.
 
 ```scala
 // Add the Dep
-libraryDependencies += "censorinus" %% "censorinus" % "1.0.1"
+libraryDependencies += "censorinus" %% "censorinus" % "1.0.2"
 
 // And a the resolver
 resolvers += "gphat" at "https://raw.github.com/gphat/mvn-repo/master/releases/",
