@@ -7,54 +7,57 @@ import github.gphat.censorinus.{Metric,MetricEncoder}
   */
 object Encoder extends MetricEncoder {
 
-  def encode(metric: Metric): String = metric.metricType match {
-    case "c" => encodeCounter(metric)
-    case "g" => encodeGauge(metric)
-    case "h" => encodeHistogram(metric)
-    case "m" => encodeMeter(metric)
-    case "ms" => encodeTimer(metric)
-    case "s" => encodeSet(metric)
-    case _ => "" // TODO Complain!
+  def encode(metric: Metric): Option[String] = metric.metricType match {
+    case "c" =>
+      val sb = new StringBuilder()
+      encodeBaseMetric(sb, metric)
+      encodeSampleRate(sb, metric.sampleRate)
+      encodeTags(sb, metric.tags)
+      Some(sb.toString())
+
+    case "g" | "h" | "m" | "ms" | "s" =>
+      Some(encodeSimpleMetric(metric))
+
+    case _ =>
+      None
   }
 
-  def encodeCounter(metric: Metric): String = {
-    s"${metric.name}:${metric.value}|c${encodeSampleRate(metric)}${encodeTags(metric)}"
+  // Encodes the initial prefix used by all metrics.
+  private def encodeBaseMetric(sb: StringBuilder, metric: Metric): Unit = {
+    sb.append(metric.name)
+    sb.append(':')
+    sb.append(metric.value)
+    sb.append('|')
+    sb.append(metric.metricType)
   }
 
-  def encodeGauge(metric: Metric): String = {
-    s"${metric.name}:${metric.value}|g${encodeTags(metric)}"
-  }
-
-  def encodeHistogram(metric: Metric): String = {
-    s"${metric.name}:${metric.value}|h${encodeTags(metric)}"
-  }
-
-  def encodeMeter(metric: Metric): String = {
-    s"${metric.name}:${metric.value}|m${encodeTags(metric)}"
-  }
-
-  def encodeSampleRate(metric: Metric): String = {
-    if(metric.sampleRate == 1.0) {
-      ""
-    } else {
-      s"|@${"%.4f".format(metric.sampleRate)}"
+  // Encodes the datadog specific tags.
+  private def encodeTags(sb: StringBuilder, tags: Seq[String]): Unit = {
+    if (!tags.isEmpty) {
+      sb.append("|#")
+      val it = tags.iterator
+      var first = true
+      while (it.hasNext) {
+        if (!first) sb.append(",")
+        sb.append(it.next())
+        first = false
+      }
     }
   }
 
-  def encodeSet(metric: Metric): String = {
-    s"${metric.name}:${metric.value}|s${encodeTags(metric)}"
-  }
-
-  def encodeTags(metric: Metric): String = {
-    // TODO Make sure this is well formed and such
-    if(metric.tags.isEmpty) {
-      ""
-    } else {
-      "|#" + metric.tags.mkString(",")
+  // Encodes the sample rate, so that counters are adjusted appropriately.
+  def encodeSampleRate(sb: StringBuilder, sampleRate: Double): Unit = {
+    if(sampleRate != 1.0) {
+      sb.append("|@")
+      sb.append("%.4f".format(sampleRate))
     }
   }
 
-  def encodeTimer(metric: Metric): String = {
-    s"${metric.name}:${metric.value.toString}|ms${encodeTags(metric)}"
+  // Encodes the base metric and tags only. This covers most metrics.
+  private def encodeSimpleMetric(metric: Metric): String = {
+    val sb = new StringBuilder()
+    encodeBaseMetric(sb, metric)
+    encodeTags(sb, metric.tags)
+    sb.toString()
   }
 }

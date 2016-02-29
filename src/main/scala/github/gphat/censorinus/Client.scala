@@ -25,7 +25,7 @@ class Client(
   floatFormat: String = "%.8f"
 ) {
 
-  @BeanProperty
+  @scala.beans.BeanProperty
   val queue = new ConcurrentLinkedQueue[Metric]()
 
   // This is an Option[Executor] to allow for NOT sending things.
@@ -51,7 +51,7 @@ class Client(
       def run() {
         // When we awake, send everything we've got in the queue!
         while(!queue.isEmpty) {
-          sender.send(encoder.encode(queue.poll))
+          send(queue.poll())
         }
       }
     }
@@ -74,7 +74,7 @@ class Client(
         queue.offer(metric)
       } else {
         // Just send it.
-        sender.send(encoder.encode(metric))
+        send(metric)
       }
     }
   }
@@ -84,6 +84,15 @@ class Client(
       name
     } else {
       s"${prefix}.${name}"
+    }
+  }
+
+
+  // Encode and send a metric to something approximating statsd.
+  private def send(metric: Metric): Unit = {
+    encoder.encode(metric) match {
+      case Some(message) => sender.send(message)
+      case None => // TODO: Complain!
     }
   }
 }

@@ -1,4 +1,4 @@
-package github.gphat
+package github.gphat.censorinus
 
 case class Metric(
   name: String,
