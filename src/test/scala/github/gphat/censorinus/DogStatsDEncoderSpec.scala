@@ -1,5 +1,6 @@
+package github.gphat.censorinus
+
 import org.scalatest._
-import github.gphat.censorinus.Metric
 import github.gphat.censorinus.dogstatsd.Encoder
 
 class DogStatsDEncoderSpec extends FlatSpec with Matchers {

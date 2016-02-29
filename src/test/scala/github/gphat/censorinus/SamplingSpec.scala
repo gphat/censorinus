@@ -1,5 +1,6 @@
+package github.gphat.censorinus
+
 import org.scalatest._
-import github.gphat.censorinus.{Client,DogStatsDClient,Metric,MetricSender,StatsDClient}
 import github.gphat.censorinus.statsd.Encoder
 
 class SamplingSpec extends FlatSpec with Matchers {
@@ -22,7 +23,7 @@ class SamplingSpec extends FlatSpec with Matchers {
   }
 
   "DogStatsD Client" should "sample things" in {
-    val client = new DogStatsDClient(prefix = "poop", flushInterval = 10000, defaultSampleRate = 0.0)
+    val client = new DogStatsDClient(prefix = "poop", defaultSampleRate = 0.0)
     client.counter("foobar", value = 1.0)
     client.decrement("foobar")
     client.increment("foobar")
@@ -31,12 +32,12 @@ class SamplingSpec extends FlatSpec with Matchers {
     client.meter("foobar", value = 1.0)
     client.set("foobar", value = "fart")
     client.timer("foobar", milliseconds = 1.0)
-    client.getQueue.size should be (0)
+    client.queue.size should be (0)
     client.shutdown
   }
 
   "StatsD Client" should "sample things" in {
-    val client = new StatsDClient(prefix = "poop", flushInterval = 10000, defaultSampleRate = 0.0)
+    val client = new StatsDClient(prefix = "poop", defaultSampleRate = 0.0)
     client.counter("foobar", value = 1.0)
     client.decrement("foobar")
     client.increment("foobar")
@@ -45,7 +46,7 @@ class SamplingSpec extends FlatSpec with Matchers {
     client.meter("foobar", value = 1.0)
     client.set("foobar", value = "fart")
     client.timer("foobar", milliseconds = 1.0)
-    client.getQueue.size should be (0)
+    client.queue.size should be (0)
     client.shutdown
   }
 }

@@ -1,5 +1,6 @@
+package github.gphat.censorinus
+
 import org.scalatest._
-import github.gphat.censorinus.Metric
 import github.gphat.censorinus.statsd.Encoder
 
 class StatsDEncoderSpec extends FlatSpec with Matchers {
