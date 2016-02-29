@@ -24,6 +24,7 @@ class Client(
   asynchronous: Boolean = true,
   floatFormat: String = "%.8f"
 ) {
+  require(flushInterval >= 1, "Please use a flush interval >= 1!")
 
   @scala.beans.BeanProperty
   val queue = new ConcurrentLinkedQueue[Metric]()
@@ -31,9 +32,6 @@ class Client(
   // This is an Option[Executor] to allow for NOT sending things.
   // We'll make an executor if the flushInterval is > -1 and we are
   // running in asynchronous mode then spin up the thread-works
-  if(flushInterval < 1) {
-    throw new Exception("Please use a flush interval > 1!")
-  }
   val executor = if(asynchronous) {
     Some(Executors.newScheduledThreadPool(1, new ThreadFactory {
       override def newThread(r: Runnable): Thread = {
