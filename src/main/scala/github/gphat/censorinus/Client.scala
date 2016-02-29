@@ -2,7 +2,7 @@ package github.gphat.censorinus
 
 import java.text.DecimalFormat
 import java.util.concurrent._
-import scala.util.Random
+import java.util.concurrent.ThreadLocalRandom
 
 /** A Censorinus client! You should create one of these and reuse it across
   * your application.
@@ -25,7 +25,9 @@ class Client(
   floatFormat: String = "%.8f"
 ) {
 
+  @BeanProperty
   val queue = new ConcurrentLinkedQueue[Metric]()
+
   // This is an Option[Executor] to allow for NOT sending things.
   // We'll make an executor if the flushInterval is > -1 and we are
   // running in asynchronous mode then spin up the thread-works
@@ -65,13 +67,8 @@ class Client(
     executor.map({ ex => ex.shutdown })
   }
 
-  /** Get the queue of unsent metrics, if for some reason you feel the need to
-    * do that.
-    */
-  def getQueue = queue
-
   def enqueue(metric: Metric, sampleRate: Double = defaultSampleRate, bypassSampler: Boolean = false) = {
-    if(bypassSampler || sampleRate == 1.0 || Random.nextDouble <= sampleRate) {
+    if(bypassSampler || sampleRate == 1.0 || ThreadLocalRandom.current().nextDouble <= sampleRate) {
       if(asynchronous) {
         // Queue it up! Leave encoding for later so we back as soon as we can.
         queue.offer(metric)
