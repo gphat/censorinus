@@ -1,9 +1,10 @@
 package github.gphat.censorinus
 
 import org.scalatest._
+import org.scalatest.concurrent.Eventually
 import github.gphat.censorinus.statsd.Encoder
 
-class SynchronySpec extends FlatSpec with Matchers {
+class SynchronySpec extends FlatSpec with Matchers with Eventually {
 
   "Client" should "deal with gauges" in {
     val s = new TestSender()
@@ -11,10 +12,11 @@ class SynchronySpec extends FlatSpec with Matchers {
 
     client.enqueue(Metric(name = "foobar", value = "1.0", metricType = "g"))
     s.getBuffer.size should be (0) // Won't be there yet
-    Thread.sleep(110) // Give it a bit more than 100ms to send
-    val m = s.getBuffer(0)
-    m should include ("foobar")
-    client.shutdown
+    eventually {
+      val m = s.getBuffer(0)
+      m should include ("foobar")
+      client.shutdown
+    }
   }
 
   it should "be synchronous" in {
