@@ -23,11 +23,19 @@ class DogStatsDEncoderSpec extends FlatSpec with Matchers {
   it should "encode timers" in {
     val m = Metric(name = "foobar", value = "1.0", metricType = "ms")
     Encoder.encode(m).get should be ("foobar:1.0|ms")
+
+    // Counter with optional sample rate
+    val m1 = Metric(name = "foobar", value = "1.0", metricType = "ms", sampleRate = 0.5)
+    Encoder.encode(m1).get should be ("foobar:1.0|ms|@0.5000")
   }
 
   it should "encode histograms" in {
     val m = Metric(name = "foobar", value = "1.0", metricType = "h")
     Encoder.encode(m).get should be ("foobar:1.0|h")
+
+    // Counter with optional sample rate
+    val m1 = Metric(name = "foobar", value = "1.0", metricType = "h", sampleRate = 0.5)
+    Encoder.encode(m1).get should be ("foobar:1.0|h|@0.5000")
   }
 
   it should "encode meters" in {

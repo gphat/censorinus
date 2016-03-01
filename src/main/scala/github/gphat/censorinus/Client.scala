@@ -50,12 +50,12 @@ class Client(
           case None =>
         }
       } catch { case (_: InterruptedException) =>
-        Thread.currentThread.interrupt()
+        Thread.currentThread.interrupt
       }
 
       def run(): Unit = {
-        while (!Thread.interrupted()) {
-          tick()
+        while (!Thread.interrupted) {
+          tick
         }
       }
     }
@@ -69,11 +69,11 @@ class Client(
     sender.shutdown
     // It's pretty safe to just forcibly shutdown the executor and interrupt
     // the running async task.
-    executor.foreach(_.shutdownNow())
+    executor.foreach(_.shutdownNow)
   }
 
   def enqueue(metric: Metric, sampleRate: Double = defaultSampleRate, bypassSampler: Boolean = false) = {
-    if(bypassSampler || sampleRate == 1.0 || ThreadLocalRandom.current().nextDouble <= sampleRate) {
+    if(bypassSampler || sampleRate == 1.0 || ThreadLocalRandom.current.nextDouble <= sampleRate) {
       if(asynchronous) {
         // Queue it up! Leave encoding for later so we back as soon as we can.
         queue.offer(metric)

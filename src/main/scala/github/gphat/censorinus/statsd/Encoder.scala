@@ -8,40 +8,39 @@ import github.gphat.censorinus._
 object Encoder extends MetricEncoder {
 
   def encode(metric: Metric): Option[String] = metric.metricType match {
-    case "c" => Some(encodeCounter(metric))
-    case "g" => Some(encodeGauge(metric))
-    case "h" => Some(encodeTimer(metric)) // StatsD doesn't support histograms, use timer instead?
-    case "m" => Some(encodeMeter(metric))
-    case "ms" => Some(encodeTimer(metric))
-    case "s" => Some(encodeSet(metric))
-    case _ => None
+    case "c" | "h" | "ms" =>
+      val sb = new StringBuilder()
+      encodeBaseMetric(sb, metric)
+      encodeSampleRate(sb, metric.sampleRate)
+      Some(sb.toString)
+
+    case "g" | "m" | "s" =>
+      Some(encodeSimpleMetric(metric))
+
+    case _ =>
+      None
   }
 
-  def encodeCounter(metric: Metric): String = {
-    s"${metric.name}:${metric.value}|c${encodeSampleRate(metric)}"
+  // Encodes the initial prefix used by all metrics.
+  private def encodeBaseMetric(sb: StringBuilder, metric: Metric): Unit = {
+    sb.append(metric.name)
+    sb.append(':')
+    sb.append(metric.value)
+    sb.append('|')
+    sb.append(metric.metricType)
   }
 
-  def encodeGauge(metric: Metric): String = {
-    s"${metric.name}:${metric.value}|g"
-  }
-
-  def encodeMeter(metric: Metric): String = {
-    s"${metric.name}:${metric.value}|m"
-  }
-
-  def encodeSampleRate(metric: Metric): String = {
-    if(metric.sampleRate == 1.0) {
-      ""
-    } else {
-      s"@${"%.4f".format(metric.sampleRate)}"
+  // Encodes the sample rate, so that counters are adjusted appropriately.
+  def encodeSampleRate(sb: StringBuilder, sampleRate: Double): Unit = {
+    if(sampleRate != 1.0) {
+      sb.append("@%.4f".format(sampleRate))
     }
   }
 
-  def encodeSet(metric: Metric): String = {
-    s"${metric.name}:${metric.value}|s"
-  }
-
-  def encodeTimer(metric: Metric): String = {
-    s"${metric.name}:${metric.value}|ms"
+  // Encodes the base metric and tags only. This covers most metrics.
+  private def encodeSimpleMetric(metric: Metric): String = {
+    val sb = new StringBuilder()
+    encodeBaseMetric(sb, metric)
+    sb.toString
   }
 }

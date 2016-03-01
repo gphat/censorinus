@@ -25,11 +25,6 @@ class StatsDEncoderSpec extends FlatSpec with Matchers {
     Encoder.encode(m).get should be ("foobar:1.0|ms")
   }
 
-  it should "encode histograms" in {
-    val m = Metric(name = "foobar", value = "1.0", metricType = "h")
-    Encoder.encode(m).get should be ("foobar:1.0|ms")
-  }
-
   it should "encode meters" in {
     val m = Metric(name = "foobar", value = "1.0", metricType = "m")
     Encoder.encode(m).get should be ("foobar:1.0|m")

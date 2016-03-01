@@ -12,7 +12,7 @@ class StatsDClientSpec extends FlatSpec with Matchers with BeforeAndAfter {
     client = new StatsDClient(prefix = "poop")
     // SOOOOOOOOoooooo hacky, but this will ensure the worker thread doesn't
     // steal our metrics before we can read them.
-    client.shutdown()
+    client.shutdown
   }
 
   "StatsDClient" should "deal with gauges" in {
@@ -45,14 +45,6 @@ class StatsDClientSpec extends FlatSpec with Matchers with BeforeAndAfter {
     m.name should be ("poop.foobar")
     m.value should be ("1.00000000")
     m.metricType should be ("c")
-  }
-
-  it should "deal with histograms" in {
-    client.histogram("foobar", 1.0)
-    val m = client.queue.poll
-    m.name should be ("poop.foobar")
-    m.value should be ("1.00000000")
-    m.metricType should be ("h")
   }
 
   it should "deal with meters" in {

@@ -42,7 +42,6 @@ class SamplingSpec extends FlatSpec with Matchers {
     client.decrement("foobar")
     client.increment("foobar")
     client.gauge("foobar", value = 1.0)
-    client.histogram("foobar", value = 1.0)
     client.meter("foobar", value = 1.0)
     client.set("foobar", value = "fart")
     client.timer("foobar", milliseconds = 1.0)

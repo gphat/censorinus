@@ -8,14 +8,14 @@ import github.gphat.censorinus.{Metric,MetricEncoder}
 object Encoder extends MetricEncoder {
 
   def encode(metric: Metric): Option[String] = metric.metricType match {
-    case "c" =>
+    case "c" | "h" | "ms" =>
       val sb = new StringBuilder()
       encodeBaseMetric(sb, metric)
       encodeSampleRate(sb, metric.sampleRate)
       encodeTags(sb, metric.tags)
-      Some(sb.toString())
+      Some(sb.toString)
 
-    case "g" | "h" | "m" | "ms" | "s" =>
+    case "g" | "m" | "s" =>
       Some(encodeSimpleMetric(metric))
 
     case _ =>
@@ -39,7 +39,7 @@ object Encoder extends MetricEncoder {
       var first = true
       while (it.hasNext) {
         if (!first) sb.append(",")
-        sb.append(it.next())
+        sb.append(it.next)
         first = false
       }
     }
@@ -48,8 +48,7 @@ object Encoder extends MetricEncoder {
   // Encodes the sample rate, so that counters are adjusted appropriately.
   def encodeSampleRate(sb: StringBuilder, sampleRate: Double): Unit = {
     if(sampleRate != 1.0) {
-      sb.append("|@")
-      sb.append("%.4f".format(sampleRate))
+      sb.append("|@%.4f".format(sampleRate))
     }
   }
 
@@ -58,6 +57,6 @@ object Encoder extends MetricEncoder {
     val sb = new StringBuilder()
     encodeBaseMetric(sb, metric)
     encodeTags(sb, metric.tags)
-    sb.toString()
+    sb.toString
   }
 }

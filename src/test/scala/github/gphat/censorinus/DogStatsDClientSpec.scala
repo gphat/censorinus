@@ -12,7 +12,7 @@ class DogStatsDClientSpec extends FlatSpec with Matchers with BeforeAndAfter {
     client = new DogStatsDClient(prefix = "poop")
     // SOOOOOOOOoooooo hacky, but this will ensure the worker thread doesn't
     // steal our metrics before we can read them.
-    client.shutdown()
+    client.shutdown
   }
 
   "DogStatsDClient" should "deal with gauges" in {

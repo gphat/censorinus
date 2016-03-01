@@ -83,23 +83,6 @@ class StatsDClient(
     bypassSampler
   )
 
-  /** Emit a histogram metric.
-    * @param name The name of the metric
-    * @param value The value of the metric, or a value to be sampled for the histogram
-    * @param sampleRate The rate at which to sample this metric.
-    * @param bypassSampler If true, the metric will always be passed through, but the sample rate will be included in the emitted metric. This is useful for when you occasionally do your own sampling.
-    */
-  def histogram(
-    name: String,
-    value: Double,
-    sampleRate: Double = defaultSampleRate,
-    bypassSampler: Boolean = false
-  ) = enqueue(
-    Metric(name = makeName(name), value = floatFormat.format(value), sampleRate = sampleRate, metricType = "h"),
-    sampleRate,
-    bypassSampler
-  )
-
   /** Emit an increment metric.
     * @param name The name of the metric
     * @param value The value of the metric, or the amount to increment by. Defaults to 1

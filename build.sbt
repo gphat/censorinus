@@ -2,7 +2,7 @@ organization := "censorinus"
 
 name := "censorinus"
 
-version := "1.0.2"
+version := "2.0.0"
 
 scalaVersion := "2.11.7"
 

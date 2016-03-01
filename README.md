@@ -15,7 +15,7 @@ Censorinus is a Scala \*StatsD client with multiple personalities.
 
 ```scala
 // Add the Dep
-libraryDependencies += "censorinus" %% "censorinus" % "1.0.2"
+libraryDependencies += "github.gphat" %% "censorinus" % "1.0.2"
 
 // And a the resolver
 resolvers += "gphat" at "https://raw.github.com/gphat/mvn-repo/master/releases/",
@@ -71,13 +71,13 @@ c.counter(name = "foo.count") // Resulting metric will be mycoolapp.foo.count
 
 # Asynchronous (default behavior)
 
-Metrics are locally queued up and emptied out periodically. By default any
-pending metrics are emptied out every 100ms. You can change this to another
-delay:
+Metrics are locally queued up — via a BlockingQueue — and emptied out in another
+thread with a 10ms delay on empty.
 
-```scala
-val c = new Client(flushInterval = 50)
-```
+**Note:** For asynchronous use there is a ScheduledThreadExecutor fired up. You
+can call `c.shutdown` to forcibly end things. The threads in this executor are
+flagged as deaemon threads so ending your program will cause any unsent metrics
+to be lost.
 
 # Synchronous
 
@@ -89,11 +89,6 @@ a high penalty!
 ```scala
 val c = new Client(asynchronous = false)
 ```
-
-Note that for asynchronous use there is a ScheduledThreadExecutor fired up. You
-can call `c.shutdown` to forcibly end things. The threads in this executor are
-flagged as deaemon threads so ending your program will cause any unsent metrics
-to be lost.
 
 # Sampling
 
