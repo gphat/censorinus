@@ -1,5 +1,6 @@
+package github.gphat.censorinus
+
 import org.scalatest._
-import github.gphat.censorinus.{Client,Metric,MetricSender}
 import github.gphat.censorinus.statsd.Encoder
 
 class SynchronySpec extends FlatSpec with Matchers {

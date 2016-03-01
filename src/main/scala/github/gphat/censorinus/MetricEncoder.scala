@@ -7,5 +7,9 @@ import github.gphat.censorinus._
   */
 trait MetricEncoder {
 
-  def encode(metric: Metric): String
+  /**
+   * Returns an encoded version of the metirc, suitable for sending over the
+   * wire. If the metric type is not supported, then `None` is returned.
+   */
+  def encode(metric: Metric): Option[String]
 }
