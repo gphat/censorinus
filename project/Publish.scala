@@ -1,7 +1,6 @@
 import sbt._
 import sbt.Keys._
 import com.typesafe.sbt.pgp.PgpKeys._
-import aether.AetherKeys._
 
 object Publish {
   lazy val defaultRepo = Some(Resolver.file("file", new File("/Users/gphat/src/mvn-repo/releases")))
@@ -22,7 +21,6 @@ object Publish {
   lazy val settings = Seq(
     homepage := Some(url("http://github.com/gphat/censorinus")),
     publishMavenStyle := true,
-    publish := aetherDeploy.value,
     publishTo := getPublishTo(isSnapshot.value),
     publishArtifact in Test := false,
     pomIncludeRepository := Function.const(false),
