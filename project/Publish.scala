@@ -6,7 +6,7 @@ object Publish {
 
   def getPublishTo(snapshot: Boolean) = {
     val providedRepo =
-      if (snapshot) {
+      if(snapshot) {
         val url = sys.props.get("publish.snapshots.url")
         url.map("snapshots" at _)
       } else {

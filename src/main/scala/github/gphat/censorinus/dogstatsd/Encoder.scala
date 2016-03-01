@@ -33,12 +33,12 @@ object Encoder extends MetricEncoder {
 
   // Encodes the datadog specific tags.
   private def encodeTags(sb: StringBuilder, tags: Seq[String]): Unit = {
-    if (!tags.isEmpty) {
+    if(!tags.isEmpty) {
       sb.append("|#")
       val it = tags.iterator
       var first = true
       while (it.hasNext) {
-        if (!first) sb.append(",")
+        if(!first) sb.append(",")
         sb.append(it.next)
         first = false
       }

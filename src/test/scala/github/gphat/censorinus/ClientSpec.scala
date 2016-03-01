@@ -15,7 +15,7 @@ class TestSender extends MetricSender {
     }
 
     this.synchronized {
-      if (buffer.size < n) {
+      if(buffer.size < n) {
         throw new Exception("didn't get enough messages!")
       } else {
         buffer.toList
