@@ -1,16 +1,16 @@
 # Changelog
 
-## [2.0.0] - 2016-02-29
+## [2.0.0] - 2016-03-01
 
 ### Changed
 * Move packages around to make publishing in non-github-repo-of-gphat's easier. The package is now `github.gphat`. Thanks [tixxit](https://github.com/tixxit)!
 * Use a BlockingQueue to simplify the asynchronous mode. Thanks [tixxit](https://github.com/tixxit)!
-* Speed up metric emission by using a `StringBuilder` instead of Scala string interoplation. Thanks [tixxit](https://github.com/tixxit)!
+* Speed up metric emission by using a `StringBuilder` instead of Scala string interpolation. Thanks [tixxit](https://github.com/tixxit)!
 * Removed the `histogram` method from the `StatsDClient` as it's not a supported metric type.
 
 # Fixed
-* Datadog histograms and timers now emit sample rates. Previously they did not
-* Small doc fixes
+* Datadog histograms and timers now emit sample rates. Previously they did not, which was a bug!
+* Small doc fixes.
 
 ## [1.0.2] - 2016-02-22
 
