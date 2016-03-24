@@ -6,7 +6,7 @@
 * Use of prefixes now makes use of `StringBuilder` instead of Scala string interpolation.
 * Clients may now be instantiated with a `maxQueueSize` to prevent unbounded growth of metrics. Thanks [tixxit](https://github.com/tixxit)!
 * Minor documentation improvements.
-* Upgrade to Scala 2.11.8
+* Upgrade to Scala 2.11.8 and SBT 0.13.11
 * Use `take` when polling in async mode, since it's the only thing the thread does.
 
 ## Added
