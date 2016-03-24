@@ -5,7 +5,6 @@ import github.gphat.censorinus.statsd.Encoder
 
 class SamplingSpec extends FlatSpec with Matchers {
 
-  var client: Client = null
   val s = new TestSender()
 
   "Client" should "sample things" in {

@@ -5,7 +5,7 @@ import java.nio.ByteBuffer
 import java.nio.channels.DatagramChannel
 import java.nio.charset.StandardCharsets
 
-class UDPSender(hostname: String = "localhost", port: Int = 8125) extends MetricSender {
+class UDPSender(hostname: String = "localhost", port: Int = MetricSender.DEFAULT_STATSD_PORT) extends MetricSender {
 
   val clientSocket = DatagramChannel.open
   clientSocket.connect(new InetSocketAddress(hostname, port))

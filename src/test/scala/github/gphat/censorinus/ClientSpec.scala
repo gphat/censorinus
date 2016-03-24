@@ -10,6 +10,9 @@ object TestSender {
   def defaultDeadline: Long = System.currentTimeMillis + 1000
 }
 
+// Create a test Sender implementation that accumulates metrics in a buffer
+// until we empty it. This enables us to block the Client's sending thread
+// and artificially cause the client to accumulate metrics.
 class TestSender(val maxMessages: Int = Int.MaxValue) extends MetricSender {
   val buffer: LinkedBlockingQueue[String] =
     new LinkedBlockingQueue(maxMessages)
@@ -49,11 +52,16 @@ class ClientSpec extends FlatSpec with Matchers with Eventually {
     val sender = new TestSender(2)
     // After the sender blocks, we'll still be able to queue up 1 more message.
     val client = new Client(encoder = Encoder, sender = sender, maxQueueSize = Some(1))
-
+    // Enqueue two items and (each time) wait for the client to flush this to
+    // our fake sender.
     client.enqueue(Metric(name = "a", value = "1.0", metricType = "g"))
     eventually { client.queue.size should be (0) } // Wait for queue to empty.
     client.enqueue(Metric(name = "b", value = "2.0", metricType = "g"))
     eventually { client.queue.size should be (0) } // Wait for queue to empty.
+    // Sanity check: the sender's buffer will have two messages in it.
+    sender.buffer.size should be (2)
+
+    // Now fill up the client's 1 and only buffer spot
     client.enqueue(Metric(name = "c", value = "3.0", metricType = "g"))
 
     // All good. The sender's buffer is full and so is the client's queue.
@@ -66,8 +74,7 @@ class ClientSpec extends FlatSpec with Matchers with Eventually {
 
     // Now that things are empty again, this will flow through.
     client.enqueue(Metric(name = "e", value = "5.0", metricType = "g"))
-    val msg = sender.awaitMessage()
-    msg should be ("e:5.0|g")
+    sender.awaitMessage() should be ("e:5.0|g")
 
     // A bit flakey, since we set a short time limit, but this is just a sanity
     // check that we have had no further messages sent, excluding the

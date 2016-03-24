@@ -1,8 +1,7 @@
 package github.gphat.censorinus
 
 import java.text.DecimalFormat
-import java.util.concurrent.{ Executors, ExecutorService, LinkedBlockingQueue,
-  ThreadFactory, ThreadLocalRandom, TimeUnit }
+import java.util.concurrent._
 import java.util.logging.Logger
 
 /** A Censorinus client! You should create one of these and reuse it across
@@ -14,7 +13,7 @@ import java.util.logging.Logger
   * @param defaultSampleRate A sample rate default to be used for all metric methods. Defaults to 1.0
   * @param asynchronous True if you want the client to asynch, false for blocking!
   * @param floatFormat Allows control of the precision of the double output via strings from [[java.util.Formatter]]. Defaults to "%.8f".
-  * @param maxQueueSize Maximum amount of metrics allowed to be queued at a time
+  * @param maxQueueSize Maximum amount of metrics allowed to be queued at a time.
   */
 class Client(
   encoder: MetricEncoder,
@@ -28,12 +27,12 @@ class Client(
   private[this] val log: Logger = Logger.getLogger(classOf[Client].getName)
 
   private[censorinus] val queue: LinkedBlockingQueue[Metric] =
-    maxQueueSize match {
-      case Some(capacity) =>
-        new LinkedBlockingQueue[Metric](capacity)
-      case None =>
-        new LinkedBlockingQueue[Metric]()
-    }
+    maxQueueSize.map({
+      capacity => new LinkedBlockingQueue[Metric](capacity)
+    }).getOrElse(
+      // Unbounded is kinda dangerous, but sure!
+      new LinkedBlockingQueue[Metric]()
+    )
 
   // This is an Option[Executor] to allow for NOT sending things.
   // We'll make an executor if we are running in asynchronous mode then spin up
@@ -55,10 +54,9 @@ class Client(
   executor.foreach { ex =>
     val task = new Runnable {
       def tick(): Unit = try {
-        Option(queue.poll(10, TimeUnit.MILLISECONDS)) match {
-          case Some(metric) => send(metric)
-          case None =>
-        }
+        Option(queue.take).map({ metric =>
+          send(metric)
+        })
       } catch { case (_: InterruptedException) =>
         Thread.currentThread.interrupt
       }
@@ -82,10 +80,10 @@ class Client(
     executor.foreach(_.shutdownNow)
   }
 
-  def enqueue(metric: Metric, sampleRate: Double = defaultSampleRate, bypassSampler: Boolean = false) = {
+  def enqueue(metric: Metric, sampleRate: Double = defaultSampleRate, bypassSampler: Boolean = false): Unit = {
     if(bypassSampler || sampleRate == 1.0 || ThreadLocalRandom.current.nextDouble <= sampleRate) {
       if(asynchronous) {
-        // Queue it up! Leave encoding for later so we back as soon as we can.
+        // Queue it up! Leave encoding for later so get we back as soon as we can.
         if (!queue.offer(metric)) {
           log.warning("Unable to enqueue metric, queue is full. " +
             "If this is during steady state, consider decreasing the defaultSampleRate, " +
@@ -102,7 +100,7 @@ class Client(
     if(prefix.isEmpty) {
       name
     } else {
-      s"${prefix}.${name}"
+      new StringBuilder(prefix).append(".").append(name).toString
     }
   }
 

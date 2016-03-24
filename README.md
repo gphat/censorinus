@@ -10,6 +10,7 @@ Censorinus is a Scala \*StatsD client with multiple personalities.
 * [StatsD Compatibility](https://github.com/etsy/statsd/blob/master/docs/metric_types.md)
 * [DogStatsD Compatibility](http://docs.datadoghq.com/guides/dogstatsd/#datagram-format)
 * UDP only
+* Option for max queue size when using asynchronous.
 
 # Using It
 
@@ -117,6 +118,13 @@ You can also supply a `bypassSampler = true` argument to any of the client's
 methods to send the metric regardless. Note that the sample rate will *also* be
 sent. This is a convenience method to allow you to do your own sampling and pass
 that along to this library.
+
+## Max Queue Size
+
+You may provide a `maxQueueSize` when creating a client. Doing so will prevent
+the accidental unbounded growth of the metric send queue. If the limit is reached
+then new metrics **will be dropped** until the queue has room again. Logs will
+be emitted in this case.
 
 # Notes
 

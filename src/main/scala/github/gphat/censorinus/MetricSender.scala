@@ -6,3 +6,7 @@ trait MetricSender {
 
   def shutdown: Unit
 }
+
+object MetricSender {
+  val DEFAULT_STATSD_PORT: Int = 8125
+}

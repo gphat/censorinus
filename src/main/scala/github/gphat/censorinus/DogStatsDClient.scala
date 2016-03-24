@@ -17,7 +17,7 @@ import scala.util.Random
   */
 class DogStatsDClient(
   hostname: String = "localhost",
-  port: Int = 8125,
+  port: Int = MetricSender.DEFAULT_STATSD_PORT,
   prefix: String = "",
   defaultSampleRate: Double = 1.0,
   asynchronous: Boolean = true,
@@ -34,7 +34,8 @@ class DogStatsDClient(
     * @param name The name of the metric
     * @param value The value of the metric, or how much to increment by
     * @param sampleRate The rate at which to sample this metric.
-    * @param bypassSampler If true, the metric will always be passed through, but the sample rate will be included in the emitted metric. This is useful for when you occasionally do your own sampling.
+    * @param bypassSampler If true, the metric will always be passed through, but the sample rate will be included in the emitted metric.
+    *                      This is useful for when you occasionally do your own sampling.
     */
   def counter(
     name: String,
@@ -42,7 +43,7 @@ class DogStatsDClient(
     sampleRate: Double = defaultSampleRate,
     tags: Seq[String] = Seq.empty,
     bypassSampler: Boolean = false
-  ) = enqueue(
+  ): Unit = enqueue(
     Metric(name = makeName(name), value = floatFormat.format(value), sampleRate = sampleRate, metricType = "c", tags = tags),
     sampleRate,
     bypassSampler
@@ -52,7 +53,8 @@ class DogStatsDClient(
     * @param name The name of the metric
     * @param value The value of the metric, or how much to decrement by. Defaults to -1
     * @param sampleRate The rate at which to sample this metric.
-    * @param bypassSampler If true, the metric will always be passed through, but the sample rate will be included in the emitted metric. This is useful for when you occasionally do your own sampling.
+    * @param bypassSampler If true, the metric will always be passed through, but the sample rate will be included in the emitted metric.
+    *                      This is useful for when you occasionally do your own sampling.
     */
   def decrement(
     name: String,
@@ -60,7 +62,7 @@ class DogStatsDClient(
     sampleRate: Double = defaultSampleRate,
     tags: Seq[String] = Seq.empty,
     bypassSampler: Boolean = false
-  ) = enqueue(
+  ): Unit = enqueue(
     Metric(name = makeName(name), value = floatFormat.format(value), sampleRate = sampleRate, metricType = "c", tags = tags),
     sampleRate,
     bypassSampler
@@ -70,7 +72,8 @@ class DogStatsDClient(
     * @param name The name of the metric
     * @param value The value of the metric, or current value of the gauge
     * @param sampleRate The rate at which to sample this metric.
-    * @param bypassSampler If true, the metric will always be passed through, but the sample rate will be included in the emitted metric. This is useful for when you occasionally do your own sampling.
+    * @param bypassSampler If true, the metric will always be passed through, but the sample rate will be included in the emitted metric.
+    *                      This is useful for when you occasionally do your own sampling.
     */
   def gauge(
     name: String,
@@ -78,7 +81,7 @@ class DogStatsDClient(
     sampleRate: Double = defaultSampleRate,
     tags: Seq[String] = Seq.empty,
     bypassSampler: Boolean = false
-  ) = enqueue(
+  ): Unit = enqueue(
     Metric(name = makeName(name), value = floatFormat.format(value), sampleRate = sampleRate, metricType = "g", tags = tags),
     sampleRate,
     bypassSampler
@@ -88,14 +91,16 @@ class DogStatsDClient(
     * @param name The name of the metric
     * @param value The value of the metric, or a value to be sampled for the histogram
     * @param sampleRate The rate at which to sample this metric.
-    * @param bypassSampler If true, the metric will always be passed through, but the sample rate will be included in the emitted metric. This is useful for when you occasionally do your own sampling.
+    * @param bypassSampler If true, the metric will always be passed through, but the sample rate will be included in the emitted metric.
+    *                      This is useful for when you occasionally do your own sampling.
     */
   def histogram(
     name: String,
     value: Double,
     sampleRate: Double = defaultSampleRate,
     tags: Seq[String] = Seq.empty,
-    bypassSampler: Boolean = false) = enqueue(
+    bypassSampler: Boolean = false
+  ): Unit = enqueue(
     Metric(name = makeName(name), value = floatFormat.format(value), sampleRate = sampleRate, metricType = "h", tags = tags),
     sampleRate,
     bypassSampler
@@ -105,14 +110,15 @@ class DogStatsDClient(
     * @param name The name of the metric
     * @param value The value of the metric, or the amount to increment by. Defaults to 1
     * @param sampleRate The rate at which to sample this metric.
-    * @param bypassSampler If true, the metric will always be passed through, but the sample rate will be included in the emitted metric. This is useful for when you occasionally do your own sampling.
+    * @param bypassSampler If true, the metric will always be passed through, but the sample rate will be included in the emitted metric.
+    *                      This is useful for when you occasionally do your own sampling.
     */
   def increment(
     name: String, value: Double = 1,
     sampleRate: Double = defaultSampleRate,
     tags: Seq[String] = Seq.empty,
     bypassSampler: Boolean = false
-  ) = enqueue(
+  ): Unit = enqueue(
     Metric(name = makeName(name), value = floatFormat.format(value), sampleRate = sampleRate, metricType = "c", tags = tags),
     sampleRate,
     bypassSampler
@@ -122,7 +128,8 @@ class DogStatsDClient(
     * @param name The name of the metric
     * @param value The value of the meter
     * @param sampleRate The rate at which to sample this metric.
-    * @param bypassSampler If true, the metric will always be passed through, but the sample rate will be included in the emitted metric. This is useful for when you occasionally do your own sampling.
+    * @param bypassSampler If true, the metric will always be passed through, but the sample rate will be included in the emitted metric.
+    *                      This is useful for when you occasionally do your own sampling.
     */
   def meter(
     name: String,
@@ -130,7 +137,7 @@ class DogStatsDClient(
     sampleRate: Double = defaultSampleRate,
     tags: Seq[String] = Seq.empty,
     bypassSampler: Boolean = false
-  ) = enqueue(
+  ): Unit = enqueue(
     Metric(name = makeName(name), value = floatFormat.format(value), sampleRate = sampleRate, metricType = "m", tags = tags),
     sampleRate,
     bypassSampler
@@ -144,7 +151,7 @@ class DogStatsDClient(
     name: String,
     value: String,
     tags: Seq[String] = Seq.empty
-  ) = enqueue(
+  ): Unit = enqueue(
     Metric(name = makeName(name), value = value, metricType = "s", tags = tags)
   )
 
@@ -152,7 +159,8 @@ class DogStatsDClient(
     * @param name The name of the metric
     * @param value The value of the timer in milliseconds
     * @param sampleRate The rate at which to sample this metric.
-    * @param bypassSampler If true, the metric will always be passed through, but the sample rate will be included in the emitted metric. This is useful for when you occasionally do your own sampling.
+    * @param bypassSampler If true, the metric will always be passed through, but the sample rate will be included in the emitted metric.
+    *                      This is useful for when you occasionally do your own sampling.
     */
   def timer(
     name: String,
@@ -160,7 +168,7 @@ class DogStatsDClient(
     sampleRate: Double = defaultSampleRate,
     tags: Seq[String] = Seq.empty,
     bypassSampler: Boolean = false
-  ) = enqueue(
+  ): Unit = enqueue(
     Metric(name = makeName(name), value = floatFormat.format(milliseconds), sampleRate = sampleRate, metricType = "ms", tags = tags),
     sampleRate,
     bypassSampler
