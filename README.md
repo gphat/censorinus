@@ -44,11 +44,15 @@ c.gauge(name = "foo.temperature", value = 84.0)
 c.histogram(name = "foo.depth", value = 123.0)
 c.meter(name = "foo.depth", value = 12.0)
 c.set(name = "foo.users.seen", value = "gphat")
+c.timer(name = "foo.users.duration", milliseconds = 123)
 ```
 
 ## DogStatsD
 
-Censorinus is compatible with the DogStatsD specification as defined [here](http://docs.datadoghq.com/guides/dogstatsd/#datagram-format).
+Censorinus is compatible with the DogStatsD specification as defined
+[here](http://docs.datadoghq.com/guides/dogstatsd/#datagram-format). It's
+basically the same as the StatsD client but each method has a `tags` argument
+that takes a `Seq[String]` of tags.
 
 ```scala
 import github.gphat.censorinus.DogStatsDClient
@@ -57,6 +61,7 @@ val c = new DogStatsDClient(host = "some.host", port = 8125)
 
 // Not gonna list 'em all since the methods are the same, but allow tags!
 c.counter(name = "foo.count", value = 2, tags = Seq("foo:bar"))
+c.timer(name = "foo.users.duration", milliseconds = 123, tags = Seq("foo:gorch"))
 ```
 
 # Prefixes
