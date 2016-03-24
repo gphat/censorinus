@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.0.2] - 2016-03-23
+
+### Changed
+* The Datagram socket is now lazy, so it will not be created until first use. Fixes #7.
+
 ## [2.0.1] - 2016-03-23
 
 ### Changed
