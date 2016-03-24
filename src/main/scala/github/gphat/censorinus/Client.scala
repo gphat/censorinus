@@ -3,6 +3,7 @@ package github.gphat.censorinus
 import java.text.DecimalFormat
 import java.util.concurrent.{ Executors, ExecutorService, LinkedBlockingQueue,
   ThreadFactory, ThreadLocalRandom, TimeUnit }
+import java.util.logging.Logger
 
 /** A Censorinus client! You should create one of these and reuse it across
   * your application.
@@ -13,6 +14,7 @@ import java.util.concurrent.{ Executors, ExecutorService, LinkedBlockingQueue,
   * @param defaultSampleRate A sample rate default to be used for all metric methods. Defaults to 1.0
   * @param asynchronous True if you want the client to asynch, false for blocking!
   * @param floatFormat Allows control of the precision of the double output via strings from [[java.util.Formatter]]. Defaults to "%.8f".
+  * @param maxQueueSize Maximum amount of metrics allowed to be queued at a time
   */
 class Client(
   encoder: MetricEncoder,
@@ -20,10 +22,18 @@ class Client(
   prefix: String = "",
   val defaultSampleRate: Double = 1.0,
   asynchronous: Boolean = true,
-  floatFormat: String = "%.8f"
+  floatFormat: String = "%.8f",
+  maxQueueSize: Option[Int] = None
 ) {
+  private[this] val log: Logger = Logger.getLogger(classOf[Client].getName)
+
   private[censorinus] val queue: LinkedBlockingQueue[Metric] =
-    new LinkedBlockingQueue[Metric]()
+    maxQueueSize match {
+      case Some(capacity) =>
+        new LinkedBlockingQueue[Metric](capacity)
+      case None =>
+        new LinkedBlockingQueue[Metric]()
+    }
 
   // This is an Option[Executor] to allow for NOT sending things.
   // We'll make an executor if we are running in asynchronous mode then spin up
@@ -76,7 +86,11 @@ class Client(
     if(bypassSampler || sampleRate == 1.0 || ThreadLocalRandom.current.nextDouble <= sampleRate) {
       if(asynchronous) {
         // Queue it up! Leave encoding for later so we back as soon as we can.
-        queue.offer(metric)
+        if (!queue.offer(metric)) {
+          log.warning("Unable to enqueue metric, queue is full. " +
+            "If this is during steady state, consider decreasing the defaultSampleRate, " +
+            "but if this periodic, consider increasing the maxQueueSize.")
+        }
       } else {
         // Just send it.
         send(metric)
@@ -95,8 +109,10 @@ class Client(
   // Encode and send a metric to something approximating statsd.
   private def send(metric: Metric): Unit = {
     encoder.encode(metric) match {
-      case Some(message) => sender.send(message)
-      case None => // TODO: Complain!
+      case Some(message) =>
+        sender.send(message)
+      case None =>
+        log.warning("Unable to send metric: unsupported metric type `${metric.metricType}`")
     }
   }
 }

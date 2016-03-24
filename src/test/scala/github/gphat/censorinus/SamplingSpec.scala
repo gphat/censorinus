@@ -11,14 +11,14 @@ class SamplingSpec extends FlatSpec with Matchers {
   "Client" should "sample things" in {
     val client = new Client(encoder = Encoder, sender = s, asynchronous = false)
     client.enqueue(Metric(name = "foobar", value = "1.0", metricType = "g"), sampleRate = 0.0)
-    s.getBuffer.size should be (0)
+    s.buffer.size should be (0)
     client.shutdown
   }
 
   it should "bypass the sampler and send it anyway" in {
     val client = new Client(encoder = Encoder, sender = s, asynchronous = false)
     client.enqueue(Metric(name = "foobar", value = "1.0", metricType = "g"), sampleRate = 0.0, bypassSampler = true)
-    s.getBuffer.size should be (1)
+    s.buffer.size should be (1)
     client.shutdown
   }
 
