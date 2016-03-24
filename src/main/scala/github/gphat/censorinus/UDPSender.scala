@@ -7,8 +7,7 @@ import java.nio.charset.StandardCharsets
 
 class UDPSender(hostname: String = "localhost", port: Int = MetricSender.DEFAULT_STATSD_PORT) extends MetricSender {
 
-  val clientSocket = DatagramChannel.open
-  clientSocket.connect(new InetSocketAddress(hostname, port))
+  lazy val clientSocket = DatagramChannel.open.connect(new InetSocketAddress(hostname, port))
 
   def send(message: String): Unit = {
     clientSocket.write(ByteBuffer.wrap(message.getBytes(StandardCharsets.UTF_8)))
