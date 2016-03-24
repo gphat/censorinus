@@ -2,7 +2,7 @@ organization := "com.github.gphat"
 
 name := "censorinus"
 
-version := "2.0.1"
+version := "2.0.2"
 
 scalaVersion := "2.11.7"
 crossScalaVersions := Seq("2.10.6", "2.11.8")
