@@ -58,7 +58,7 @@ that takes a `Seq[String]` of tags.
 ```scala
 import github.gphat.censorinus.DogStatsDClient
 
-val c = new DogStatsDClient(host = "some.host", port = 8125)
+val c = new DogStatsDClient(hostname = "some.host", port = 8125)
 
 // Not gonna list 'em all since the methods are the same, but allow tags!
 c.counter(name = "foo.count", value = 2, tags = Seq("foo:bar"))
@@ -71,7 +71,7 @@ If all your metrics start with a common string like a service or team name then
 you can safe yourself by using prefixes when instantiating a client:
 
 ```scala
-val c = new DogStatsDClient(host = "some.host", port = 8125, prefix = "mycoolapp")
+val c = new DogStatsDClient(hostname = "some.host", port = 8125, prefix = "mycoolapp")
 c.counter(name = "foo.count") // Resulting metric will be mycoolapp.foo.count
 ```
 
