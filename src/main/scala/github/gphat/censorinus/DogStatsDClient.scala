@@ -21,14 +21,16 @@ class DogStatsDClient(
   prefix: String = "",
   defaultSampleRate: Double = 1.0,
   asynchronous: Boolean = true,
-  floatFormat: String = "%.8f"
+  floatFormat: String = "%.8f",
+  maxQueueSize: Option[Int] = None
 ) extends Client(
   sender = new UDPSender(hostname = hostname, port = port),
   encoder = Encoder,
   prefix = prefix,
   defaultSampleRate = defaultSampleRate,
   asynchronous = asynchronous,
-  floatFormat = floatFormat
+  floatFormat = floatFormat,
+  maxQueueSize = maxQueueSize
 ) {
   /** Emit a counter metric.
     * @param name The name of the metric
