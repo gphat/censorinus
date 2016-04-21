@@ -116,7 +116,7 @@ class Client(
       case Some(message) =>
         sender.send(message)
       case None =>
-        log.warning("Unable to send metric: unsupported metric type `${metric.metricType}`")
+        log.warning(s"Unable to send metric: unsupported metric type `${metric.metricType}`")
     }
   }
 }
