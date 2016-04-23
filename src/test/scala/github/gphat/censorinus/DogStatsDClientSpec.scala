@@ -27,7 +27,7 @@ class DogStatsDClientSpec extends FlatSpec with Matchers with BeforeAndAfter {
   }
 
   it should "deal with service checks" in {
-    client.serviceCheck("foobar", DogStatsDClient.OK, tags = Seq("foo:bar"))
+    client.serviceCheck("foobar", DogStatsDClient.SERVICE_CHECK_OK, tags = Seq("foo:bar"))
     val m = client.queue.poll
     m shouldBe a [ServiceCheckMetric]
     val c = m.asInstanceOf[ServiceCheckMetric]

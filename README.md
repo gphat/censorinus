@@ -65,6 +65,16 @@ c.counter(name = "foo.count", value = 2, tags = Seq("foo:bar"))
 c.timer(name = "foo.users.duration", milliseconds = 123, tags = Seq("foo:gorch"))
 ```
 
+### Service checks
+
+The Datadog client also supports [service checks](http://docs.datadoghq.com/guides/dogstatsd/#service-checks):
+
+```scala
+client.serviceCheck("some_service", DogStatsDClient.SERVICE_CHECK_OK, tags = Seq("foo:bar"))
+```
+
+Note that the prefix on the client will be used for the service check as well.
+
 # Prefixes
 
 If all your metrics start with a common string like a service or team name then

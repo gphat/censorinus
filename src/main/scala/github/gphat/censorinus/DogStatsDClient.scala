@@ -6,10 +6,10 @@ import java.util.concurrent._
 import scala.util.Random
 
 object DogStatsDClient {
-  val OK = 0
-  val WARNING = 1
-  val CRITICAL = 2
-  val UNKNOWN = 3
+  val SERVICE_CHECK_OK = 0
+  val SERVICE_CHECK_WARNING = 1
+  val SERVICE_CHECK_CRITICAL = 2
+  val SERVICE_CHECK_UNKNOWN = 3
 }
 
 /** A DStatsD client! You should create one of these and reuse it across
