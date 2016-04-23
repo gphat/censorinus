@@ -11,6 +11,9 @@ object Encoder extends MetricEncoder {
   val format = new DecimalFormat("0.################")
 
   def encode(metric: Metric): Option[String] = metric match {
+    case sc: ServiceCheckMetric =>
+      Some(encodeServiceCheck(sc))
+
     case sm: SampledMetric =>
       val sb = new StringBuilder()
       encodeBaseMetric(sb, metric)
@@ -66,6 +69,28 @@ object Encoder extends MetricEncoder {
       sb.append("|@")
       sb.append(format.format(sampleRate))
     }
+  }
+
+  def encodeServiceCheck(sc: ServiceCheckMetric): String = {
+    val sb = new StringBuilder()
+    sb.append("_sc|")
+    sb.append(sc.name)
+    sb.append("|")
+    sb.append(sc.status.toString)
+    sc.timestamp.foreach({ d =>
+      sb.append("|d:")
+      sb.append(d.toString)
+    })
+    sc.hostname.foreach({ h =>
+      sb.append("|h:")
+      sb.append(h.toString)
+    })
+    encodeTags(sb, sc.tags)
+    sc.message.foreach({ m =>
+      sb.append("|m:")
+      sb.append(m)
+    })
+    sb.toString
   }
 
   // Encodes the base metric and tags only. This covers most metrics.

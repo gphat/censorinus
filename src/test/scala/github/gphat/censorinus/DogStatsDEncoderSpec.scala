@@ -42,4 +42,13 @@ class DogStatsDEncoderSpec extends FlatSpec with Matchers {
     val m = SetMetric(name = "foobar", value = "fart")
     Encoder.encode(m).get should be ("foobar:fart|s")
   }
+
+  it should "encode service checks" in {
+    val now = System.currentTimeMillis() / 1000L
+    val m = ServiceCheckMetric(
+      name = "foobar", status = DogStatsDClient.OK, tags = Array("foo:bar"),
+      hostname = Some("fart"), timestamp = Some(now), message = Some("wheeee")
+    )
+    Encoder.encode(m).get should be ("_sc|foobar|0|d:%d|h:fart|#foo:bar|m:wheeee".format(now))
+  }
 }

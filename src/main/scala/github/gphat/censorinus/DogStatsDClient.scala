@@ -5,6 +5,13 @@ import github.gphat.censorinus.dogstatsd.Encoder
 import java.util.concurrent._
 import scala.util.Random
 
+object DogStatsDClient {
+  val OK = 0
+  val WARNING = 1
+  val CRITICAL = 2
+  val UNKNOWN = 3
+}
+
 /** A DStatsD client! You should create one of these and reuse it across
   * your application.
   * @constructor Creates a new client instance
@@ -122,6 +129,27 @@ class DogStatsDClient(
     CounterMetric(name = makeName(name), value = value, sampleRate = sampleRate, tags = tags),
     sampleRate,
     bypassSampler
+  )
+
+  /** Emit a service check.
+   *
+   */
+  def serviceCheck(
+    name: String,
+    status: Int,
+    timestamp: Option[Long] = None,
+    hostname: Option[String] = None,
+    message: Option[String] = None,
+    tags: Seq[String] = Seq.empty
+  ): Unit = enqueue(
+    ServiceCheckMetric(
+      name = makeName(name),
+      status = status,
+      message = message,
+      timestamp = timestamp,
+      hostname = hostname,
+      tags = tags
+    )
   )
 
   /** Emit a set metric.

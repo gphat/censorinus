@@ -43,6 +43,15 @@ case class MeterMetric(
   tags: Seq[String] = Seq.empty
 ) extends Metric with NumericMetric
 
+case class ServiceCheckMetric(
+  name: String,
+  status: Int,
+  timestamp: Option[Long] = None,
+  hostname: Option[String] = None,
+  message: Option[String] = None,
+  tags: Seq[String] = Seq.empty
+) extends Metric
+
 case class SetMetric(
   name: String,
   value: String,
