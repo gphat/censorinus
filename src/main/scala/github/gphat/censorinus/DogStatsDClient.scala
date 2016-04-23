@@ -21,7 +21,6 @@ class DogStatsDClient(
   prefix: String = "",
   defaultSampleRate: Double = 1.0,
   asynchronous: Boolean = true,
-  floatFormat: String = "%.8f",
   maxQueueSize: Option[Int] = None
 ) extends Client(
   sender = new UDPSender(hostname = hostname, port = port),
@@ -29,7 +28,6 @@ class DogStatsDClient(
   prefix = prefix,
   defaultSampleRate = defaultSampleRate,
   asynchronous = asynchronous,
-  floatFormat = floatFormat,
   maxQueueSize = maxQueueSize
 ) {
   /** Emit a counter metric.
@@ -46,7 +44,7 @@ class DogStatsDClient(
     tags: Seq[String] = Seq.empty,
     bypassSampler: Boolean = false
   ): Unit = enqueue(
-    Metric(name = makeName(name), value = floatFormat.format(value), sampleRate = sampleRate, metricType = "c", tags = tags),
+    CounterMetric(name = makeName(name), value = value, sampleRate = sampleRate, tags = tags),
     sampleRate,
     bypassSampler
   )
@@ -65,7 +63,7 @@ class DogStatsDClient(
     tags: Seq[String] = Seq.empty,
     bypassSampler: Boolean = false
   ): Unit = enqueue(
-    Metric(name = makeName(name), value = floatFormat.format(value), sampleRate = sampleRate, metricType = "c", tags = tags),
+    CounterMetric(name = makeName(name), value = value, sampleRate = sampleRate, tags = tags),
     sampleRate,
     bypassSampler
   )
@@ -84,7 +82,7 @@ class DogStatsDClient(
     tags: Seq[String] = Seq.empty,
     bypassSampler: Boolean = false
   ): Unit = enqueue(
-    Metric(name = makeName(name), value = floatFormat.format(value), sampleRate = sampleRate, metricType = "g", tags = tags),
+    GaugeMetric(name = makeName(name), value = value, tags = tags),
     sampleRate,
     bypassSampler
   )
@@ -103,7 +101,7 @@ class DogStatsDClient(
     tags: Seq[String] = Seq.empty,
     bypassSampler: Boolean = false
   ): Unit = enqueue(
-    Metric(name = makeName(name), value = floatFormat.format(value), sampleRate = sampleRate, metricType = "h", tags = tags),
+    HistogramMetric(name = makeName(name), value = value, sampleRate = sampleRate, tags = tags),
     sampleRate,
     bypassSampler
   )
@@ -121,26 +119,7 @@ class DogStatsDClient(
     tags: Seq[String] = Seq.empty,
     bypassSampler: Boolean = false
   ): Unit = enqueue(
-    Metric(name = makeName(name), value = floatFormat.format(value), sampleRate = sampleRate, metricType = "c", tags = tags),
-    sampleRate,
-    bypassSampler
-  )
-
-  /** Emit a meter metric.
-    * @param name The name of the metric
-    * @param value The value of the meter
-    * @param sampleRate The rate at which to sample this metric.
-    * @param bypassSampler If true, the metric will always be passed through, but the sample rate will be included in the emitted metric.
-    *                      This is useful for when you occasionally do your own sampling.
-    */
-  def meter(
-    name: String,
-    value: Double,
-    sampleRate: Double = defaultSampleRate,
-    tags: Seq[String] = Seq.empty,
-    bypassSampler: Boolean = false
-  ): Unit = enqueue(
-    Metric(name = makeName(name), value = floatFormat.format(value), sampleRate = sampleRate, metricType = "m", tags = tags),
+    CounterMetric(name = makeName(name), value = value, sampleRate = sampleRate, tags = tags),
     sampleRate,
     bypassSampler
   )
@@ -154,7 +133,7 @@ class DogStatsDClient(
     value: String,
     tags: Seq[String] = Seq.empty
   ): Unit = enqueue(
-    Metric(name = makeName(name), value = value, metricType = "s", tags = tags)
+    SetMetric(name = makeName(name), value = value, tags = tags)
   )
 
   /** Emit a timer metric.
@@ -171,7 +150,7 @@ class DogStatsDClient(
     tags: Seq[String] = Seq.empty,
     bypassSampler: Boolean = false
   ): Unit = enqueue(
-    Metric(name = makeName(name), value = floatFormat.format(milliseconds), sampleRate = sampleRate, metricType = "ms", tags = tags),
+    TimerMetric(name = makeName(name), value = milliseconds, sampleRate = sampleRate, tags = tags),
     sampleRate,
     bypassSampler
   )

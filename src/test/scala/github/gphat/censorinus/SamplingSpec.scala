@@ -9,14 +9,14 @@ class SamplingSpec extends FlatSpec with Matchers {
 
   "Client" should "sample things" in {
     val client = new Client(encoder = Encoder, sender = s, asynchronous = false)
-    client.enqueue(Metric(name = "foobar", value = "1.0", metricType = "g"), sampleRate = 0.0)
+    client.enqueue(CounterMetric(name = "foobar", value = 1.0), sampleRate = 0.0)
     s.buffer.size should be (0)
     client.shutdown
   }
 
   it should "bypass the sampler and send it anyway" in {
     val client = new Client(encoder = Encoder, sender = s, asynchronous = false)
-    client.enqueue(Metric(name = "foobar", value = "1.0", metricType = "g"), sampleRate = 0.0, bypassSampler = true)
+    client.enqueue(CounterMetric(name = "foobar", value = 1.0), sampleRate = 0.0, bypassSampler = true)
     s.buffer.size should be (1)
     client.shutdown
   }
@@ -28,7 +28,6 @@ class SamplingSpec extends FlatSpec with Matchers {
     client.increment("foobar")
     client.gauge("foobar", value = 1.0)
     client.histogram("foobar", value = 1.0)
-    client.meter("foobar", value = 1.0)
     client.set("foobar", value = "fart")
     client.timer("foobar", milliseconds = 1.0)
     client.queue.size should be (0)

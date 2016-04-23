@@ -1,20 +1,23 @@
 package github.gphat.censorinus.statsd
 
 import github.gphat.censorinus._
+import java.text.DecimalFormat
 
 /** A Metric to String encoder for StatsD protocol.
   * @see See [[https://github.com/b/statsd_spec]] for full spec
   */
 object Encoder extends MetricEncoder {
 
-  def encode(metric: Metric): Option[String] = metric.metricType match {
-    case "c" | "h" | "ms" =>
+  val format = new DecimalFormat("0.################")
+
+  def encode(metric: Metric): Option[String] = metric match {
+    case sm: SampledMetric =>
       val sb = new StringBuilder()
       encodeBaseMetric(sb, metric)
-      encodeSampleRate(sb, metric.sampleRate)
+      encodeSampleRate(sb, sm.sampleRate)
       Some(sb.toString)
 
-    case "g" | "m" | "s" =>
+    case _: Metric =>
       Some(encodeSimpleMetric(metric))
 
     case _ =>
@@ -25,15 +28,28 @@ object Encoder extends MetricEncoder {
   private def encodeBaseMetric(sb: StringBuilder, metric: Metric): Unit = {
     sb.append(metric.name)
     sb.append(':')
-    sb.append(metric.value)
+    val finalValue = metric match {
+      // This is the only string based-metric
+      case nm: NumericMetric => format.format(nm.value)
+      case sm: StringMetric => sm.value
+    }
+    sb.append(finalValue)
     sb.append('|')
-    sb.append(metric.metricType)
+    val metricType = metric match {
+      case _: CounterMetric => "c"
+      case _: GaugeMetric => "g"
+      case _: MeterMetric => "m"
+      case _: SetMetric => "s"
+      case _: TimerMetric => "ms"
+    }
+    sb.append(metricType)
   }
 
   // Encodes the sample rate, so that counters are adjusted appropriately.
   def encodeSampleRate(sb: StringBuilder, sampleRate: Double): Unit = {
-    if(sampleRate != 1.0) {
-      sb.append("@%.4f".format(sampleRate))
+    if(sampleRate < 1.0) {
+      sb.append("|@")
+      sb.append(format.format(sampleRate))
     }
   }
 

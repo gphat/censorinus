@@ -14,7 +14,7 @@ class SynchronySpec extends FlatSpec with Matchers with Eventually {
     s.buffer.offer("BOO!")
     s.buffer.size should be (1)
 
-    client.enqueue(Metric(name = "foobar", value = "1.0", metricType = "g"))
+    client.enqueue(GaugeMetric(name = "foobar", value = 1.0))
     s.buffer.size should be (1) // New metric won't be there yet
     s.awaitMessage() should be ("BOO!")
     s.awaitMessage() should include ("foobar")
@@ -25,7 +25,7 @@ class SynchronySpec extends FlatSpec with Matchers with Eventually {
     val s = new TestSender()
     val client = new Client(encoder = Encoder, sender = s, asynchronous = false)
 
-    client.enqueue(Metric(name = "foobar", value = "1.0", metricType = "g"))
+    client.enqueue(GaugeMetric(name = "foobar", value = 1.0))
     val m = s.buffer.poll()
     m should include ("foobar")
     client.shutdown
