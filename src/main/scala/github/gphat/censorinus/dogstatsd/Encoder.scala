@@ -14,6 +14,9 @@ object Encoder extends MetricEncoder {
     case sc: ServiceCheckMetric =>
       Some(encodeServiceCheck(sc))
 
+    case e: EventMetric =>
+      Some(encodeEvent(e))
+
     case sm: SampledMetric =>
       val sb = new StringBuilder()
       encodeBaseMetric(sb, metric)
@@ -47,6 +50,45 @@ object Encoder extends MetricEncoder {
       case _: TimerMetric => "ms"
     }
     sb.append(metricType)
+  }
+
+  def encodeEvent(sc: EventMetric): String = {
+    val sb = new StringBuilder()
+    sb.append("_e{")
+    sb.append(sc.name.length.toString)
+    sb.append(",")
+    sb.append(sc.text.length.toString)
+    sb.append("}:")
+    sb.append(sc.name)
+    sb.append("|")
+    sb.append(sc.text)
+    sc.timestamp.foreach({ d =>
+      sb.append("|d:")
+      sb.append(d.toString)
+    })
+    sc.hostname.foreach({ h =>
+      sb.append("|h:")
+      sb.append(h.toString)
+    })
+    sc.aggregationKey.foreach({ ak =>
+      sb.append("|k:")
+      sb.append(ak.toString)
+    })
+    sc.priority.foreach({ p =>
+      sb.append("|p:")
+      sb.append(p)
+    })
+    sc.sourceTypeName.foreach({ stn =>
+      sb.append("|s:")
+      sb.append(stn)
+    })
+    sc.alertType.foreach({ at =>
+      sb.append("|a:")
+      sb.append(at)
+    })
+    encodeTags(sb, sc.tags)
+
+    sb.toString
   }
 
   // Encodes the datadog specific tags.

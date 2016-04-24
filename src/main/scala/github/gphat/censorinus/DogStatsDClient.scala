@@ -10,6 +10,12 @@ object DogStatsDClient {
   val SERVICE_CHECK_WARNING = 1
   val SERVICE_CHECK_CRITICAL = 2
   val SERVICE_CHECK_UNKNOWN = 3
+  val EVENT_PRIORITY_LOW = "low"
+  val EVENT_PRIORITY_NORMAL = "normal"
+  val EVENT_ALERT_TYPE_ERROR = "error"
+  val EVENT_ALERT_TYPE_INFO = "info"
+  val EVENT_ALERT_TYPE_SUCCESS = "success"
+  val EVENT_ALERT_TYPE_WARNING = "warning"
 }
 
 /** A DStatsD client! You should create one of these and reuse it across
@@ -73,6 +79,35 @@ class DogStatsDClient(
     CounterMetric(name = makeName(name), value = value, sampleRate = sampleRate, tags = tags),
     sampleRate,
     bypassSampler
+  )
+
+  /** Emit an event.
+   * @param name The title of the event.
+   * @param text The text of the event.
+   * @param timestamp The timestamp of the event.
+   * @param hostname The hostname.
+   * @param aggregationKey The aggregation key.
+   * @param priority The priority.
+   * @param sourceTypeName The source type name.
+   * @param alertType The alert type.
+   * @param tags The tags!
+   */
+  def event(
+    name: String,
+    text: String,
+    timestamp: Option[Long],
+    hostname: Option[String],
+    aggregationKey: Option[String],
+    priority: Option[String],
+    sourceTypeName: Option[String],
+    alertType: Option[String],
+    tags: Seq[String] = Seq.empty
+  ): Unit = enqueue(
+    EventMetric(
+      name = name, text = text, timestamp = timestamp, hostname = hostname,
+      aggregationKey = aggregationKey, priority = priority, sourceTypeName = sourceTypeName,
+      alertType = alertType, tags = tags
+    )
   )
 
   /** Emit a gauge metric.

@@ -24,6 +24,18 @@ case class CounterMetric(
   tags: Seq[String] = Seq.empty
 ) extends Metric with NumericMetric with SampledMetric
 
+case class EventMetric(
+  name: String,
+  text: String,
+  timestamp: Option[Long],
+  hostname: Option[String],
+  aggregationKey: Option[String],
+  priority: Option[String],
+  sourceTypeName: Option[String],
+  alertType: Option[String],
+  tags: Seq[String] = Seq.empty
+) extends Metric
+
 case class GaugeMetric(
   name: String,
   value: Double,

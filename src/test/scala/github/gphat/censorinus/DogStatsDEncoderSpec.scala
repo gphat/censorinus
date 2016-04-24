@@ -51,4 +51,16 @@ class DogStatsDEncoderSpec extends FlatSpec with Matchers {
     )
     Encoder.encode(m).get should be ("_sc|foobar|0|d:%d|h:fart|#foo:bar|m:wheeee".format(now))
   }
+
+  it should "encode events" in {
+    val now = System.currentTimeMillis() / 1000L
+    val m = EventMetric(
+      name = "foobar", text = "derp derp derp", tags = Array("foo:bar"),
+      hostname = Some("fart"), timestamp = Some(now), aggregationKey = Some("agg_key"),
+      priority = Some(DogStatsDClient.EVENT_PRIORITY_LOW),
+      sourceTypeName = Some("user"),
+      alertType = Some(DogStatsDClient.EVENT_ALERT_TYPE_ERROR)
+    )
+    Encoder.encode(m).get should be ("_e{6,14}:foobar|derp derp derp|d:%d|h:fart|k:agg_key|p:low|s:user|a:error|#foo:bar".format(now))
+  }
 }
