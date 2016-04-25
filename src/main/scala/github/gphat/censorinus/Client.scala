@@ -4,8 +4,11 @@ import java.text.DecimalFormat
 import java.util.concurrent._
 import java.util.logging.Logger
 
+import scala.util.control.NonFatal
+
 /** A Censorinus client! You should create one of these and reuse it across
   * your application.
+  *
   * @constructor Creates a new client instance
   * @param encoder The MetricEncoder implementation this client will use
   * @param sender The MetricSender implementation this client will use
@@ -57,8 +60,11 @@ class Client(
         Option(queue.take).map({ metric =>
           send(metric)
         })
-      } catch { case (_: InterruptedException) =>
-        Thread.currentThread.interrupt
+      } catch {
+        case _: InterruptedException => Thread.currentThread.interrupt
+        case NonFatal(exception) => {
+          log.warning(s"Swallowing exception thrown while sending metric: $exception")
+        }
       }
 
       def run(): Unit = {
@@ -110,7 +116,7 @@ class Client(
       case Some(message) =>
         sender.send(message)
       case None =>
-        log.warning("Unable to send metric: unsupported metric type `${metric.metricType}`")
+        log.warning(s"Unable to send metric: unsupported metric type `${metric.metricType}`")
     }
   }
 }
