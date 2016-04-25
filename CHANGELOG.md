@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.0.4] - 2016-04-25
+
+### Fixed
+
+* Swallow exceptions that would otherwise cause no more metrics to be sent. Thanks [bkirwi](https://github.com/bkirwi)!
+
 ## [2.0.2] - 2016-03-23
 
 ### Changed
