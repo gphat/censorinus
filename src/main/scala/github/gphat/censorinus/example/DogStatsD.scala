@@ -22,9 +22,9 @@ object DogStatsD {
       timestamp = Some(System.currentTimeMillis / 1000),
       hostname = Some("farts"),
       aggregationKey = Some("abc-1234"),
-      priority = Some("high"),
+      priority = Some(DogStatsDClient.EVENT_PRIORITY_LOW),
       sourceTypeName = Some("nagios"),
-      alertType = Some("error"),
+      alertType = Some(DogStatsDClient.EVENT_ALERT_TYPE_ERROR),
       tags = Seq("a:b")
     )
 

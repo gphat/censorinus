@@ -1,9 +1,22 @@
 # Changelog
 
+## [2.1.0] - 2016-04-25
+
+### Added
+* DogStatsD client has new `event` and `serviceCheck` methods.
+* `DogStatsDClient.SERVICE_CHECK_*`, `DogStatsDClient.EVENT_PRIORITY_*`, and `DogStatsDClient.EVENT_ALERT_TYPE_*` added to support the aforementioned new methods.
+
+### Changed
+* Under the hood, the metrics supplied are now represented as things like `GaugeMetric`, etc. A number of traits are used to simplify logic in choosing how to encode these metric types for output. This is transparent to the end user, as the client interfaces are unchanged.
+* There is no longer a `floatFormat` parameter for the clients. It's unlikely you used this anyway.
+* With the number formatting now contained in a single thread, the use of a DecimalFormatter allows for better looking numeric output, meaning we don't spew `.000000` unnecessarily on things, saving some bytes.
+
+### Fixed
+* Corrected some minor documentation nits.
+
 ## [2.0.4] - 2016-04-25
 
 ### Fixed
-
 * Swallow exceptions that would otherwise cause no more metrics to be sent. Thanks [bkirwi](https://github.com/bkirwi)!
 
 ## [2.0.2] - 2016-03-23

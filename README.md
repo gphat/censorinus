@@ -85,9 +85,9 @@ client.event(
   name = "I am an event",
   text = "And here are my contents",
   aggregationKey = Some("abc-1234"),
-  priority = Some("high"),
+  priority = Some(DogStatsDClient.EVENT_PRIORITY_LOW),
   sourceTypeName = Some("nagios"),
-  alertType = Some("error"),
+  alertType = Some(DogStatsDClient.EVENT_ALERT_TYPE_ERROR),
   tags = Seq("a:b")
 )
 ```

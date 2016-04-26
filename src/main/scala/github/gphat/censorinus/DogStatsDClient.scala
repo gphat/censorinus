@@ -18,7 +18,7 @@ object DogStatsDClient {
   val EVENT_ALERT_TYPE_WARNING = "warning"
 }
 
-/** A DStatsD client! You should create one of these and reuse it across
+/** A DogStatsD client! You should create one of these and reuse it across
   * your application.
   * @constructor Creates a new client instance
   * @param hostname the host to send metrics to, defaults to localhost
