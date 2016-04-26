@@ -7,49 +7,60 @@ class DogStatsDEncoderSpec extends FlatSpec with Matchers {
 
   "DogStatsD Encoder" should "encode gauges" in {
 
-    val g = Metric(name = "foobar", value = "1.0", metricType = "g", tags = Array("foo:bar"))
-    Encoder.encode(g).get should be ("foobar:1.0|g|#foo:bar")
+    val g = GaugeMetric(name = "foobar", value = 1.0, tags = Array("foo:bar"))
+    Encoder.encode(g).get should be ("foobar:1|g|#foo:bar")
   }
 
   it should "encode counters" in {
-    val m = Metric(name = "foobar", value = "1.0", metricType = "c")
-    Encoder.encode(m).get should be ("foobar:1.0|c")
+    val m = CounterMetric(name = "foobar", value = 1.0)
+    Encoder.encode(m).get should be ("foobar:1|c")
 
     // Counter with optional sample rate
-    val m1 = Metric(name = "foobar", value = "1.0", metricType = "c", sampleRate = 0.5)
-    Encoder.encode(m1).get should be ("foobar:1.0|c|@0.5000")
+    val m1 = CounterMetric(name = "foobar", value = 1.0, sampleRate = 0.5)
+    Encoder.encode(m1).get should be ("foobar:1|c|@0.5")
   }
 
   it should "encode timers" in {
-    val m = Metric(name = "foobar", value = "1.0", metricType = "ms")
-    Encoder.encode(m).get should be ("foobar:1.0|ms")
+    val m = TimerMetric(name = "foobar", value = 1.0)
+    Encoder.encode(m).get should be ("foobar:1|ms")
 
     // Counter with optional sample rate
-    val m1 = Metric(name = "foobar", value = "1.0", metricType = "ms", sampleRate = 0.5)
-    Encoder.encode(m1).get should be ("foobar:1.0|ms|@0.5000")
+    val m1 = TimerMetric(name = "foobar", value = 1.0, sampleRate = 0.5)
+    Encoder.encode(m1).get should be ("foobar:1|ms|@0.5")
   }
 
   it should "encode histograms" in {
-    val m = Metric(name = "foobar", value = "1.0", metricType = "h")
-    Encoder.encode(m).get should be ("foobar:1.0|h")
+    val m = HistogramMetric(name = "foobar", value = 1.0)
+    Encoder.encode(m).get should be ("foobar:1|h")
 
     // Counter with optional sample rate
-    val m1 = Metric(name = "foobar", value = "1.0", metricType = "h", sampleRate = 0.5)
-    Encoder.encode(m1).get should be ("foobar:1.0|h|@0.5000")
-  }
-
-  it should "encode meters" in {
-    val m = Metric(name = "foobar", value = "1.0", metricType = "m")
-    Encoder.encode(m).get should be ("foobar:1.0|m")
+    val m1 = HistogramMetric(name = "foobar", value = 1.0, sampleRate = 0.5)
+    Encoder.encode(m1).get should be ("foobar:1|h|@0.5")
   }
 
   it should "encode sets" in {
-    val m = Metric(name = "foobar", value = "fart", metricType = "s")
+    val m = SetMetric(name = "foobar", value = "fart")
     Encoder.encode(m).get should be ("foobar:fart|s")
   }
 
-  it should "encode counters with sample rate" in {
-    val m = Metric(name = "foobar", value = "1.0", sampleRate = 0.5, metricType = "c")
-    Encoder.encode(m).get should be ("foobar:1.0|c|@0.5000")
+  it should "encode service checks" in {
+    val now = System.currentTimeMillis() / 1000L
+    val m = ServiceCheckMetric(
+      name = "foobar", status = DogStatsDClient.SERVICE_CHECK_OK, tags = Array("foo:bar"),
+      hostname = Some("fart"), timestamp = Some(now), message = Some("wheeee")
+    )
+    Encoder.encode(m).get should be ("_sc|foobar|0|d:%d|h:fart|#foo:bar|m:wheeee".format(now))
+  }
+
+  it should "encode events" in {
+    val now = System.currentTimeMillis() / 1000L
+    val m = EventMetric(
+      name = "foobar", text = "derp derp derp", tags = Array("foo:bar"),
+      hostname = Some("fart"), timestamp = Some(now), aggregationKey = Some("agg_key"),
+      priority = Some(DogStatsDClient.EVENT_PRIORITY_LOW),
+      sourceTypeName = Some("user"),
+      alertType = Some(DogStatsDClient.EVENT_ALERT_TYPE_ERROR)
+    )
+    Encoder.encode(m).get should be ("_e{6,14}:foobar|derp derp derp|d:%d|h:fart|k:agg_key|p:low|s:user|a:error|#foo:bar".format(now))
   }
 }

@@ -16,7 +16,7 @@ Censorinus is a Scala \*StatsD client with multiple personalities.
 
 ```scala
 // Add the Dep
-libraryDependencies += "com.github.gphat" %% "censorinus" % "2.0.4"
+libraryDependencies += "com.github.gphat" %% "censorinus" % "2.1.0"
 
 // And a the resolver
 resolvers += "gphat" at "https://raw.github.com/gphat/mvn-repo/master/releases/",
@@ -53,7 +53,8 @@ c.timer(name = "foo.users.duration", milliseconds = 123)
 Censorinus is compatible with the DogStatsD specification as defined
 [here](http://docs.datadoghq.com/guides/dogstatsd/#datagram-format). It's
 basically the same as the StatsD client but each method has a `tags` argument
-that takes a `Seq[String]` of tags.
+that takes a `Seq[String]` of tags. It also supports some additional Features
+such as histograms, events and service checks.
 
 ```scala
 import github.gphat.censorinus.DogStatsDClient
@@ -63,6 +64,32 @@ val c = new DogStatsDClient(hostname = "some.host", port = 8125)
 // Not gonna list 'em all since the methods are the same, but allow tags!
 c.counter(name = "foo.count", value = 2, tags = Seq("foo:bar"))
 c.timer(name = "foo.users.duration", milliseconds = 123, tags = Seq("foo:gorch"))
+```
+
+### Service checks
+
+The Datadog client also supports [service checks](http://docs.datadoghq.com/guides/dogstatsd/#service-checks):
+
+```scala
+client.serviceCheck("some_service", DogStatsDClient.SERVICE_CHECK_OK, tags = Seq("foo:bar"))
+```
+
+Note that the prefix on the client will be used for the service check as well.
+
+### Events
+
+The Datadog client also supports [events](http://docs.datadoghq.com/guides/dogstatsd/#service-checks).
+
+```scala
+client.event(
+  name = "I am an event",
+  text = "And here are my contents",
+  aggregationKey = Some("abc-1234"),
+  priority = Some("high"),
+  sourceTypeName = Some("nagios"),
+  alertType = Some("error"),
+  tags = Seq("a:b")
+)
 ```
 
 # Prefixes

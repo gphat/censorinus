@@ -5,6 +5,19 @@ import github.gphat.censorinus.dogstatsd.Encoder
 import java.util.concurrent._
 import scala.util.Random
 
+object DogStatsDClient {
+  val SERVICE_CHECK_OK = 0
+  val SERVICE_CHECK_WARNING = 1
+  val SERVICE_CHECK_CRITICAL = 2
+  val SERVICE_CHECK_UNKNOWN = 3
+  val EVENT_PRIORITY_LOW = "low"
+  val EVENT_PRIORITY_NORMAL = "normal"
+  val EVENT_ALERT_TYPE_ERROR = "error"
+  val EVENT_ALERT_TYPE_INFO = "info"
+  val EVENT_ALERT_TYPE_SUCCESS = "success"
+  val EVENT_ALERT_TYPE_WARNING = "warning"
+}
+
 /** A DStatsD client! You should create one of these and reuse it across
   * your application.
   * @constructor Creates a new client instance
@@ -21,7 +34,6 @@ class DogStatsDClient(
   prefix: String = "",
   defaultSampleRate: Double = 1.0,
   asynchronous: Boolean = true,
-  floatFormat: String = "%.8f",
   maxQueueSize: Option[Int] = None
 ) extends Client(
   sender = new UDPSender(hostname = hostname, port = port),
@@ -29,7 +41,6 @@ class DogStatsDClient(
   prefix = prefix,
   defaultSampleRate = defaultSampleRate,
   asynchronous = asynchronous,
-  floatFormat = floatFormat,
   maxQueueSize = maxQueueSize
 ) {
   /** Emit a counter metric.
@@ -46,7 +57,7 @@ class DogStatsDClient(
     tags: Seq[String] = Seq.empty,
     bypassSampler: Boolean = false
   ): Unit = enqueue(
-    Metric(name = makeName(name), value = floatFormat.format(value), sampleRate = sampleRate, metricType = "c", tags = tags),
+    CounterMetric(name = makeName(name), value = value, sampleRate = sampleRate, tags = tags),
     sampleRate,
     bypassSampler
   )
@@ -65,9 +76,38 @@ class DogStatsDClient(
     tags: Seq[String] = Seq.empty,
     bypassSampler: Boolean = false
   ): Unit = enqueue(
-    Metric(name = makeName(name), value = floatFormat.format(value), sampleRate = sampleRate, metricType = "c", tags = tags),
+    CounterMetric(name = makeName(name), value = value, sampleRate = sampleRate, tags = tags),
     sampleRate,
     bypassSampler
+  )
+
+  /** Emit an event.
+   * @param name The title of the event.
+   * @param text The text of the event.
+   * @param timestamp The timestamp of the event.
+   * @param hostname The hostname.
+   * @param aggregationKey The aggregation key.
+   * @param priority The priority.
+   * @param sourceTypeName The source type name.
+   * @param alertType The alert type.
+   * @param tags The tags!
+   */
+  def event(
+    name: String,
+    text: String,
+    timestamp: Option[Long] = None,
+    hostname: Option[String] = None,
+    aggregationKey: Option[String] = None,
+    priority: Option[String] = None,
+    sourceTypeName: Option[String] = None,
+    alertType: Option[String] = None,
+    tags: Seq[String] = Seq.empty
+  ): Unit = enqueue(
+    EventMetric(
+      name = name, text = text, timestamp = timestamp, hostname = hostname,
+      aggregationKey = aggregationKey, priority = priority, sourceTypeName = sourceTypeName,
+      alertType = alertType, tags = tags
+    )
   )
 
   /** Emit a gauge metric.
@@ -84,7 +124,7 @@ class DogStatsDClient(
     tags: Seq[String] = Seq.empty,
     bypassSampler: Boolean = false
   ): Unit = enqueue(
-    Metric(name = makeName(name), value = floatFormat.format(value), sampleRate = sampleRate, metricType = "g", tags = tags),
+    GaugeMetric(name = makeName(name), value = value, tags = tags),
     sampleRate,
     bypassSampler
   )
@@ -103,7 +143,7 @@ class DogStatsDClient(
     tags: Seq[String] = Seq.empty,
     bypassSampler: Boolean = false
   ): Unit = enqueue(
-    Metric(name = makeName(name), value = floatFormat.format(value), sampleRate = sampleRate, metricType = "h", tags = tags),
+    HistogramMetric(name = makeName(name), value = value, sampleRate = sampleRate, tags = tags),
     sampleRate,
     bypassSampler
   )
@@ -121,28 +161,30 @@ class DogStatsDClient(
     tags: Seq[String] = Seq.empty,
     bypassSampler: Boolean = false
   ): Unit = enqueue(
-    Metric(name = makeName(name), value = floatFormat.format(value), sampleRate = sampleRate, metricType = "c", tags = tags),
+    CounterMetric(name = makeName(name), value = value, sampleRate = sampleRate, tags = tags),
     sampleRate,
     bypassSampler
   )
 
-  /** Emit a meter metric.
-    * @param name The name of the metric
-    * @param value The value of the meter
-    * @param sampleRate The rate at which to sample this metric.
-    * @param bypassSampler If true, the metric will always be passed through, but the sample rate will be included in the emitted metric.
-    *                      This is useful for when you occasionally do your own sampling.
-    */
-  def meter(
+  /** Emit a service check.
+   *
+   */
+  def serviceCheck(
     name: String,
-    value: Double,
-    sampleRate: Double = defaultSampleRate,
-    tags: Seq[String] = Seq.empty,
-    bypassSampler: Boolean = false
+    status: Int,
+    timestamp: Option[Long] = None,
+    hostname: Option[String] = None,
+    message: Option[String] = None,
+    tags: Seq[String] = Seq.empty
   ): Unit = enqueue(
-    Metric(name = makeName(name), value = floatFormat.format(value), sampleRate = sampleRate, metricType = "m", tags = tags),
-    sampleRate,
-    bypassSampler
+    ServiceCheckMetric(
+      name = makeName(name),
+      status = status,
+      message = message,
+      timestamp = timestamp,
+      hostname = hostname,
+      tags = tags
+    )
   )
 
   /** Emit a set metric.
@@ -154,7 +196,7 @@ class DogStatsDClient(
     value: String,
     tags: Seq[String] = Seq.empty
   ): Unit = enqueue(
-    Metric(name = makeName(name), value = value, metricType = "s", tags = tags)
+    SetMetric(name = makeName(name), value = value, tags = tags)
   )
 
   /** Emit a timer metric.
@@ -171,7 +213,7 @@ class DogStatsDClient(
     tags: Seq[String] = Seq.empty,
     bypassSampler: Boolean = false
   ): Unit = enqueue(
-    Metric(name = makeName(name), value = floatFormat.format(milliseconds), sampleRate = sampleRate, metricType = "ms", tags = tags),
+    TimerMetric(name = makeName(name), value = milliseconds, sampleRate = sampleRate, tags = tags),
     sampleRate,
     bypassSampler
   )

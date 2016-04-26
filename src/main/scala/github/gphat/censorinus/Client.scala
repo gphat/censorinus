@@ -15,7 +15,6 @@ import scala.util.control.NonFatal
   * @param prefix A prefix to add to all metric names. A period will be added to the end, resulting in prefix.metricname.
   * @param defaultSampleRate A sample rate default to be used for all metric methods. Defaults to 1.0
   * @param asynchronous True if you want the client to asynch, false for blocking!
-  * @param floatFormat Allows control of the precision of the double output via strings from [[java.util.Formatter]]. Defaults to "%.8f".
   * @param maxQueueSize Maximum amount of metrics allowed to be queued at a time.
   */
 class Client(
@@ -24,7 +23,6 @@ class Client(
   prefix: String = "",
   val defaultSampleRate: Double = 1.0,
   asynchronous: Boolean = true,
-  floatFormat: String = "%.8f",
   maxQueueSize: Option[Int] = None
 ) {
   private[this] val log: Logger = Logger.getLogger(classOf[Client].getName)

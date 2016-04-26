@@ -21,15 +21,13 @@ class StatsDClient(
   port: Int = MetricSender.DEFAULT_STATSD_PORT,
   prefix: String = "",
   defaultSampleRate: Double = 1.0,
-  asynchronous: Boolean = true,
-  floatFormat: String = "%.8f"
+  asynchronous: Boolean = true
 ) extends Client(
   sender = new UDPSender(hostname = hostname, port = port),
   encoder = Encoder,
   prefix = prefix,
   defaultSampleRate = defaultSampleRate,
-  asynchronous = asynchronous,
-  floatFormat = floatFormat
+  asynchronous = asynchronous
 ) {
 
   /** Emit a counter metric.
@@ -45,7 +43,7 @@ class StatsDClient(
     sampleRate: Double = defaultSampleRate,
     bypassSampler: Boolean = false
   ): Unit = enqueue(
-    Metric(name = makeName(name), value = floatFormat.format(value), sampleRate = sampleRate, metricType = "c"),
+    CounterMetric(name = makeName(name), value = value, sampleRate = sampleRate),
     sampleRate,
     bypassSampler
   )
@@ -63,7 +61,7 @@ class StatsDClient(
     sampleRate: Double = defaultSampleRate,
     bypassSampler: Boolean = false
   ): Unit = enqueue(
-    Metric(name = makeName(name), value = floatFormat.format(value), sampleRate = sampleRate, metricType = "c"),
+    CounterMetric(name = makeName(name), value = value, sampleRate = sampleRate),
     sampleRate,
     bypassSampler
   )
@@ -81,7 +79,7 @@ class StatsDClient(
     sampleRate: Double = defaultSampleRate,
     bypassSampler: Boolean = false
   ): Unit = enqueue(
-    Metric(name = makeName(name), value = floatFormat.format(value), sampleRate = sampleRate, metricType = "g"),
+    GaugeMetric(name = makeName(name), value = value),
     sampleRate,
     bypassSampler
   )
@@ -99,7 +97,7 @@ class StatsDClient(
     sampleRate: Double = defaultSampleRate,
     bypassSampler: Boolean = false
   ): Unit = enqueue(
-    Metric(name = makeName(name), value = floatFormat.format(value), sampleRate = sampleRate, metricType = "c"),
+    CounterMetric(name = makeName(name), value = value, sampleRate = sampleRate),
     sampleRate,
     bypassSampler
   )
@@ -117,7 +115,7 @@ class StatsDClient(
     sampleRate: Double = defaultSampleRate,
     bypassSampler: Boolean = false
   ): Unit = enqueue(
-    Metric(name = makeName(name), value = floatFormat.format(value), sampleRate = sampleRate, metricType = "m"),
+    MeterMetric(name = makeName(name), value = value),
     sampleRate,
     bypassSampler
   )
@@ -127,7 +125,7 @@ class StatsDClient(
    * @param value The item to add to the set
    */
   def set(name: String, value: String): Unit = enqueue(
-    Metric(name = makeName(name), value = value, metricType = "s")
+    SetMetric(name = makeName(name), value = value)
   )
 
   /** Emit a timer metric.
@@ -142,7 +140,7 @@ class StatsDClient(
     sampleRate: Double = defaultSampleRate,
     bypassSampler: Boolean = false
   ): Unit = enqueue(
-    Metric(name = makeName(name), value = floatFormat.format(milliseconds), sampleRate = sampleRate, metricType = "ms"),
+    TimerMetric(name = makeName(name), value = milliseconds, sampleRate = sampleRate),
     sampleRate,
     bypassSampler
   )

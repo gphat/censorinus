@@ -41,9 +41,9 @@ class ClientSpec extends FlatSpec with Matchers with Eventually {
   "ClientSpec" should "deal with gauges" in {
     val sender = new TestSender()
     val client = new Client(encoder = Encoder, sender = sender)
-    client.enqueue(Metric(name = "foobar", value = "1.0", metricType = "g"))
+    client.enqueue(GaugeMetric(name = "foobar", value = 1.0))
     val msg :: Nil = sender.awaitMessages(1)
-    msg should be ("foobar:1.0|g")
+    msg should be ("foobar:1|g")
     client.shutdown
   }
 
@@ -54,27 +54,27 @@ class ClientSpec extends FlatSpec with Matchers with Eventually {
     val client = new Client(encoder = Encoder, sender = sender, maxQueueSize = Some(1))
     // Enqueue two items and (each time) wait for the client to flush this to
     // our fake sender.
-    client.enqueue(Metric(name = "a", value = "1.0", metricType = "g"))
+    client.enqueue(GaugeMetric(name = "a", value = 1.0))
     eventually { client.queue.size should be (0) } // Wait for queue to empty.
-    client.enqueue(Metric(name = "b", value = "2.0", metricType = "g"))
+    client.enqueue(GaugeMetric(name = "b", value = 2.0))
     eventually { client.queue.size should be (0) } // Wait for queue to empty.
     // Sanity check: the sender's buffer will have two messages in it.
     sender.buffer.size should be (2)
 
     // Now fill up the client's 1 and only buffer spot
-    client.enqueue(Metric(name = "c", value = "3.0", metricType = "g"))
+    client.enqueue(GaugeMetric(name = "c", value = 3.0))
 
     // All good. The sender's buffer is full and so is the client's queue.
     // This metric will be dropped instead of queued up.
-    client.enqueue(Metric(name = "d", value = "4.0", metricType = "g"))
+    client.enqueue(GaugeMetric(name = "d", value = 4.0))
 
     // We drain the buffer and the client's queue.
     val messages = sender.awaitMessages(3)
-    messages should be (List("a:1.0|g", "b:2.0|g", "c:3.0|g"))
+    messages should be (List("a:1|g", "b:2|g", "c:3|g"))
 
     // Now that things are empty again, this will flow through.
-    client.enqueue(Metric(name = "e", value = "5.0", metricType = "g"))
-    sender.awaitMessage() should be ("e:5.0|g")
+    client.enqueue(GaugeMetric(name = "e", value = 5.0))
+    sender.awaitMessage() should be ("e:5|g")
 
     // A bit flakey, since we set a short time limit, but this is just a sanity
     // check that we have had no further messages sent, excluding the
