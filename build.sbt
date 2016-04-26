@@ -5,8 +5,7 @@ name := "censorinus"
 scalaVersion := "2.11.7"
 crossScalaVersions := Seq("2.10.6", "2.11.8")
 
-scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
-scalacOptions in Test ++= Seq("-Yrangepos")
+scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-Yrangepos")
 
 resolvers ++= Seq("snapshots", "releases").map(Resolver.sonatypeRepo)
 
