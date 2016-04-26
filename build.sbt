@@ -2,11 +2,10 @@ organization := "com.github.gphat"
 
 name := "censorinus"
 
-scalaVersion := "2.11.7"
+scalaVersion := "2.11.8"
 crossScalaVersions := Seq("2.10.6", "2.11.8")
 
-scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature", "-Yrangepos")
-scalacOptions in Test ++= Seq("-Yrangepos")
+scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
 resolvers ++= Seq("snapshots", "releases").map(Resolver.sonatypeRepo)
 
