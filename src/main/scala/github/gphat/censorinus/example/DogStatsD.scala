@@ -16,6 +16,27 @@ object DogStatsD {
     client.timer("foo.bar.baz_timing", Random.nextDouble, tags = Seq("gorch:flurb"))
     client.set("foo.bar.baz_set", UUID.randomUUID.toString, tags = Seq("gorch:flurb"))
 
+    client.event(
+      name = "I am an event",
+      text = "And here are my contents",
+      timestamp = Some(System.currentTimeMillis / 1000),
+      hostname = Some("farts"),
+      aggregationKey = Some("abc-1234"),
+      priority = Some("high"),
+      sourceTypeName = Some("nagios"),
+      alertType = Some("error"),
+      tags = Seq("a:b")
+    )
+
+    client.serviceCheck(
+      name = "foo.bar.gorch",
+      status = DogStatsDClient.SERVICE_CHECK_OK,
+      timestamp = Some(System.currentTimeMillis / 1000),
+      hostname = Some("Farts"),
+      message = Some("GOT 'IM"),
+      tags = Seq("a:b")
+    )
+
     client.shutdown
   }
 }

@@ -95,12 +95,12 @@ class DogStatsDClient(
   def event(
     name: String,
     text: String,
-    timestamp: Option[Long],
-    hostname: Option[String],
-    aggregationKey: Option[String],
-    priority: Option[String],
-    sourceTypeName: Option[String],
-    alertType: Option[String],
+    timestamp: Option[Long] = None,
+    hostname: Option[String] = None,
+    aggregationKey: Option[String] = None,
+    priority: Option[String] = None,
+    sourceTypeName: Option[String] = None,
+    alertType: Option[String] = None,
     tags: Seq[String] = Seq.empty
   ): Unit = enqueue(
     EventMetric(
