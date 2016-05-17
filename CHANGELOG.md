@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.1.1] - 2016-05-17
+
+### Fixed
+* Fixed bug in encoding of events that caused the `alert_type` field to be dropped. Thanks [@jpellerin](https://github.com/jpellerin)!
+
 ## [2.1.0] - 2016-04-25
 
 ### Added
