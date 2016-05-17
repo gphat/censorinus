@@ -83,7 +83,7 @@ object Encoder extends MetricEncoder {
       sb.append(stn)
     })
     sc.alertType.foreach({ at =>
-      sb.append("|a:")
+      sb.append("|t:")
       sb.append(at)
     })
     encodeTags(sb, sc.tags)
