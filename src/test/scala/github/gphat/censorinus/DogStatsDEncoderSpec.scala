@@ -61,6 +61,6 @@ class DogStatsDEncoderSpec extends FlatSpec with Matchers {
       sourceTypeName = Some("user"),
       alertType = Some(DogStatsDClient.EVENT_ALERT_TYPE_ERROR)
     )
-    Encoder.encode(m).get should be ("_e{6,14}:foobar|derp derp derp|d:%d|h:fart|k:agg_key|p:low|s:user|a:error|#foo:bar".format(now))
+    Encoder.encode(m).get should be ("_e{6,14}:foobar|derp derp derp|d:%d|h:fart|k:agg_key|p:low|s:user|t:error|#foo:bar".format(now))
   }
 }
