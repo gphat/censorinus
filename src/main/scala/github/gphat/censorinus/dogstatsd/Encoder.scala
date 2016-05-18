@@ -68,11 +68,11 @@ object Encoder extends MetricEncoder {
     })
     sc.hostname.foreach({ h =>
       sb.append("|h:")
-      sb.append(h.toString)
+      sb.append(h)
     })
     sc.aggregationKey.foreach({ ak =>
       sb.append("|k:")
-      sb.append(ak.toString)
+      sb.append(ak)
     })
     sc.priority.foreach({ p =>
       sb.append("|p:")
@@ -125,7 +125,7 @@ object Encoder extends MetricEncoder {
     })
     sc.hostname.foreach({ h =>
       sb.append("|h:")
-      sb.append(h.toString)
+      sb.append(h)
     })
     encodeTags(sb, sc.tags)
     sc.message.foreach({ m =>
