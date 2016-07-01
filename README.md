@@ -107,6 +107,11 @@ c.counter(name = "foo.count") // Resulting metric will be mycoolapp.foo.count
 Metrics are locally queued up — via a BlockingQueue — and emptied out in another
 thread with a 10ms delay on empty.
 
+You may provide a `maxQueueSize` when creating a client. Doing so will prevent
+the accidental unbounded growth of the metric send queue. If the limit is reached
+then new metrics **will be dropped** until the queue has room again. Logs will
+be emitted in this case.
+
 **Note:** For asynchronous use there is a ScheduledThreadExecutor fired up. You
 can call `c.shutdown` to forcibly end things. The threads in this executor are
 flagged as deaemon threads so ending your program will cause any unsent metrics
@@ -145,13 +150,6 @@ You can also supply a `bypassSampler = true` argument to any of the client's
 methods to send the metric regardless. Note that the sample rate will *also* be
 sent. This is a convenience method to allow you to do your own sampling and pass
 that along to this library.
-
-## Max Queue Size
-
-You may provide a `maxQueueSize` when creating a client. Doing so will prevent
-the accidental unbounded growth of the metric send queue. If the limit is reached
-then new metrics **will be dropped** until the queue has room again. Logs will
-be emitted in this case.
 
 # Notes
 

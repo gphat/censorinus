@@ -1,9 +1,11 @@
 package github.gphat.censorinus
 
 import java.text.DecimalFormat
+import java.util.ArrayList
 import java.util.concurrent._
 import java.util.logging.Logger
 
+import scala.collection.JavaConversions._
 import scala.util.control.NonFatal
 
 /** A Censorinus client! You should create one of these and reuse it across
@@ -56,7 +58,12 @@ class Client(
     val task = new Runnable {
       def tick(): Unit = try {
         Option(queue.take).map({ metric =>
-          send(metric)
+          val buff = new ArrayList[Metric]()
+          buff.add(metric)
+          queue.drainTo(buff)
+          buff.foreach({ m =>
+            send(m)
+          })
         })
       } catch {
         case _: InterruptedException => Thread.currentThread.interrupt
@@ -89,7 +96,7 @@ class Client(
       if(asynchronous) {
         // Queue it up! Leave encoding for later so get we back as soon as we can.
         if (!queue.offer(metric)) {
-          log.warning("Unable to enqueue metric, queue is full. " +
+          log.warning("Unable to enqueue metric, queue is full. Metric was dropped." +
             "If this is during steady state, consider decreasing the defaultSampleRate, " +
             "but if this periodic, consider increasing the maxQueueSize.")
         }
