@@ -1,11 +1,9 @@
 package github.gphat.censorinus
 
 import java.text.DecimalFormat
-import java.util.ArrayList
 import java.util.concurrent._
 import java.util.logging.Logger
 
-import scala.collection.JavaConversions._
 import scala.util.control.NonFatal
 
 /** A Censorinus client! You should create one of these and reuse it across
