@@ -51,7 +51,7 @@ class Client(
   }
 
   // If we are running asynchronously, then kick off our long-running task that
-  // repeatedly polls the queue and send the available metrics down the road.
+  // repeatedly polls the queue and sends the available metrics down the road.
   executor.foreach { ex =>
     val task = new Runnable {
       def tick(): Unit = try {
