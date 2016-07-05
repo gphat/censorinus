@@ -87,7 +87,7 @@ class Client(
       if(asynchronous) {
         // Queue it up! Leave encoding for later so get we back as soon as we can.
         if (!queue.offer(metric)) {
-          log.warning("Unable to enqueue metric, queue is full. Metric was dropped." +
+          log.warning("Unable to enqueue metric, queue is full. Metric was dropped. " +
             "If this is during steady state, consider decreasing the defaultSampleRate, " +
             "but if this periodic, consider increasing the maxQueueSize.")
         }
