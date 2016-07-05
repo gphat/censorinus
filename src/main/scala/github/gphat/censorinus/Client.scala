@@ -57,14 +57,7 @@ class Client(
   executor.foreach { ex =>
     val task = new Runnable {
       def tick(): Unit = try {
-        Option(queue.take).map({ metric =>
-          val buff = new ArrayList[Metric]()
-          buff.add(metric)
-          queue.drainTo(buff)
-          buff.foreach({ m =>
-            send(m)
-          })
-        })
+        Option(queue.take).foreach(send)
       } catch {
         case _: InterruptedException => Thread.currentThread.interrupt
         case NonFatal(exception) => {

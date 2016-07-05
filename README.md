@@ -104,18 +104,18 @@ c.counter(name = "foo.count") // Resulting metric will be mycoolapp.foo.count
 
 # Asynchronous (default behavior)
 
-Metrics are locally queued up — via a BlockingQueue — and emptied out in another
-thread with a 10ms delay on empty.
+Metrics are locally queued via a BlockingQueue and emptied out in single
+ThreadExecutor thread. Messages are sent as quickly as the blocking `take` in
+that thread can fetch an item from the head of the queue.
 
 You may provide a `maxQueueSize` when creating a client. Doing so will prevent
 the accidental unbounded growth of the metric send queue. If the limit is reached
 then new metrics **will be dropped** until the queue has room again. Logs will
 be emitted in this case.
 
-**Note:** For asynchronous use there is a ScheduledThreadExecutor fired up. You
-can call `c.shutdown` to forcibly end things. The threads in this executor are
-flagged as deaemon threads so ending your program will cause any unsent metrics
-to be lost.
+**Note:** You can call `c.shutdown` to forcibly end things. The threads in this
+executor are flagged as deaemon threads so ending your program will cause any
+unsent metrics to be lost.
 
 # Synchronous
 
