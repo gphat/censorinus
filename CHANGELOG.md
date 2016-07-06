@@ -1,9 +1,14 @@
 # Changelog
 
-## [2.1.2] - UNRELEASED
+## [2.1.2] - 2016-07-06
 
 ### Fixed
 * Fixed some `toString` warnings. Thanks [@jpellerin](https://github.com/jpellerin)!
+* Improved docs for asynchronous features.
+
+### Changed
+* Updated error messages for when `maxQueueSize` is hit.
+* Cleaned up code around emptying queue to be simpler.
 
 
 ## [2.1.1] - 2016-05-17
