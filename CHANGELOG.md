@@ -1,5 +1,11 @@
 # Changelog
 
+## [2.1.2] - UNRELEASED
+
+### Fixed
+* Fixed some `toString` warnings. Thanks [@jpellerin](https://github.com/jpellerin)!
+
+
 ## [2.1.1] - 2016-05-17
 
 ### Fixed
