@@ -51,13 +51,11 @@ class Client(
   }
 
   // If we are running asynchronously, then kick off our long-running task that
-  // repeatedly polls the queue and send the available metrics down the road.
+  // repeatedly polls the queue and sends the available metrics down the road.
   executor.foreach { ex =>
     val task = new Runnable {
       def tick(): Unit = try {
-        Option(queue.take).map({ metric =>
-          send(metric)
-        })
+        Option(queue.take).foreach(send)
       } catch {
         case _: InterruptedException => Thread.currentThread.interrupt
         case NonFatal(exception) => {
@@ -89,7 +87,7 @@ class Client(
       if(asynchronous) {
         // Queue it up! Leave encoding for later so get we back as soon as we can.
         if (!queue.offer(metric)) {
-          log.warning("Unable to enqueue metric, queue is full. " +
+          log.warning("Unable to enqueue metric, queue is full. Metric was dropped. " +
             "If this is during steady state, consider decreasing the defaultSampleRate, " +
             "but if this periodic, consider increasing the maxQueueSize.")
         }
