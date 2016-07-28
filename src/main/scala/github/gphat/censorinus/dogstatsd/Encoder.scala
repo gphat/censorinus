@@ -14,8 +14,13 @@ object Encoder extends MetricEncoder {
     case sc: ServiceCheckMetric =>
       Some(encodeServiceCheck(sc))
 
-    case e: EventMetric =>
-      Some(encodeEvent(e))
+    case em: EventMetric =>
+      Some(encodeEvent(em))
+
+    case nm: NumericMetric if(nm.value.isInfinite || nm.value.isNaN) =>
+      // Note, we protect against infinity, or NaN which we'll drop via the
+      // default case.
+      None
 
     case sm: SampledMetric =>
       val sb = new StringBuilder()
@@ -23,6 +28,9 @@ object Encoder extends MetricEncoder {
       encodeSampleRate(sb, sm.sampleRate)
       encodeTags(sb, metric.tags)
       Some(sb.toString)
+
+    case sm: StringMetric =>
+      Some(encodeSimpleMetric(metric))
 
     case _: Metric =>
       Some(encodeSimpleMetric(metric))

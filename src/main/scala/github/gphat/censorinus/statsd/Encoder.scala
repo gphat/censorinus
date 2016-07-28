@@ -17,6 +17,9 @@ object Encoder extends MetricEncoder {
       encodeSampleRate(sb, sm.sampleRate)
       Some(sb.toString)
 
+    case nm: NumericMetric if(nm.value.isInfinite || nm.value.isNaN) =>
+      None
+
     case _: Metric =>
       Some(encodeSimpleMetric(metric))
 

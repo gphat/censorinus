@@ -11,6 +11,14 @@ class DogStatsDEncoderSpec extends FlatSpec with Matchers {
     Encoder.encode(g).get should be ("foobar:1|g|#foo:bar")
   }
 
+  it should "drop infinite values" in {
+    val g1 = GaugeMetric(name = "foobar", value = java.lang.Double.NEGATIVE_INFINITY, tags = Array("foo:bar"))
+    Encoder.encode(g1) shouldBe None
+
+    val g2 = GaugeMetric(name = "foobar", value = java.lang.Double.POSITIVE_INFINITY, tags = Array("foo:bar"))
+    Encoder.encode(g2) shouldBe None
+  }
+
   it should "encode counters" in {
     val m = CounterMetric(name = "foobar", value = 1.0)
     Encoder.encode(m).get should be ("foobar:1|c")

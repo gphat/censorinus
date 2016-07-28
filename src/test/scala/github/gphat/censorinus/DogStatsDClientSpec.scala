@@ -23,7 +23,6 @@ class DogStatsDClientSpec extends FlatSpec with Matchers with BeforeAndAfter {
     m shouldBe a [GaugeMetric]
     val gm = m.asInstanceOf[GaugeMetric]
     gm.value should be (1.0)
-
   }
 
   it should "deal with events" in {
