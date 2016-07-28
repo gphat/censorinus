@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.1.3] - 2016-07-28
+
+### Changed
+* Exceptions that could've been emitted by ending UDP datagrams are now swalloed by default.
+* Added `allowExceptions` as a client instantiation option to control exception handling.
+* "Invalid" gauge values `Double.NaN` as well as infinite values are now silently dropped.
+
 ## [2.1.2] - 2016-07-06
 
 ### Fixed
