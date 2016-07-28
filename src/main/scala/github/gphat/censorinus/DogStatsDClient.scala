@@ -26,7 +26,8 @@ object DogStatsDClient {
   * @param prefix A prefix to add to all metric names. A period will be added to the end, resulting in prefix.metricname.
   * @param defaultSampleRate A sample rate default to be used for all metric methods. Defaults to 1.0
   * @param asynchronous True if you want the client to asynch, false for blocking!
-  * @param floatFormat Allows control of the precision of the double output via strings from [[java.util.Formatter]]. Defaults to "%.8f".
+  * @param maxQueueSize Maximum amount of metrics allowed to be queued at a time.
+  * @param allowExceptions If false, any `SocketException`s will be swallowed silently
   */
 class DogStatsDClient(
   hostname: String = "localhost",
@@ -34,9 +35,10 @@ class DogStatsDClient(
   prefix: String = "",
   defaultSampleRate: Double = 1.0,
   asynchronous: Boolean = true,
-  maxQueueSize: Option[Int] = None
+  maxQueueSize: Option[Int] = None,
+  allowExceptions: Boolean = false
 ) extends Client(
-  sender = new UDPSender(hostname = hostname, port = port),
+  sender = new UDPSender(hostname = hostname, port = port, allowExceptions = allowExceptions),
   encoder = Encoder,
   prefix = prefix,
   defaultSampleRate = defaultSampleRate,

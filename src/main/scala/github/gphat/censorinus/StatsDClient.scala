@@ -14,16 +14,17 @@ import scala.util.Random
   * @param prefix A prefix to add to all metric names. A period will be added to the end, resulting in prefix.metricname.
   * @param defaultSampleRate A sample rate default to be used for all metric methods. Defaults to 1.0
   * @param asynchronous True if you want the client to asynch, false for blocking!
-  * @param floatFormat Allows control of the precision of the double output via strings from [[java.util.Formatter]]. Defaults to "%.8f".
+  * @param allowExceptions If false, any `SocketException`s will be swallowed silently
   */
 class StatsDClient(
   hostname: String = "localhost",
   port: Int = MetricSender.DEFAULT_STATSD_PORT,
   prefix: String = "",
   defaultSampleRate: Double = 1.0,
-  asynchronous: Boolean = true
+  asynchronous: Boolean = true,
+  allowExceptions: Boolean = false
 ) extends Client(
-  sender = new UDPSender(hostname = hostname, port = port),
+  sender = new UDPSender(hostname = hostname, port = port, allowExceptions = allowExceptions),
   encoder = Encoder,
   prefix = prefix,
   defaultSampleRate = defaultSampleRate,
