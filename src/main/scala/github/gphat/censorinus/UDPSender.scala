@@ -19,8 +19,9 @@ class UDPSender(
       clientSocket.write(ByteBuffer.wrap(message.getBytes(StandardCharsets.UTF_8)))
     } catch {
       case se @ (_ : SocketException | _ : UnresolvedAddressException) => {
-        // If were allowing exceptions, rethrow the one we just got, otherwise
-        // we'll do nothing and swallow it.
+        // Check if we're allowing exceptions and rethrow if so. We didn't use
+        // a guard on the case because then we'd need a second case to catch
+        // the !allowExceptions case!
         if(allowExceptions) {
           throw se
         }

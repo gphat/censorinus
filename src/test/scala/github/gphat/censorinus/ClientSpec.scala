@@ -52,35 +52,26 @@ class ClientSpec extends FlatSpec with Matchers with Eventually {
     val sender = new TestSender(2)
     // After the sender blocks, we'll still be able to queue up 1 more message.
     val client = new Client(encoder = Encoder, sender = sender, maxQueueSize = Some(1))
-    // Enqueue two items and (each time) wait for the client to flush this to
-    // our fake sender.
-    client.enqueue(GaugeMetric(name = "a", value = 1.0))
-    eventually { client.queue.size should be (0) } // Wait for queue to empty.
-    client.enqueue(GaugeMetric(name = "b", value = 2.0))
-    eventually { client.queue.size should be (0) } // Wait for queue to empty.
-    // Sanity check: the sender's buffer will have two messages in it.
-    sender.buffer.size should be (2)
-
+    // Hacky, but prevent things being pulled without our knowledge
+    client.shutdown
     // Now fill up the client's 1 and only buffer spot
-    client.enqueue(GaugeMetric(name = "c", value = 3.0))
+    client.enqueue(GaugeMetric(name = "a", value = 1.0))
 
     // All good. The sender's buffer is full and so is the client's queue.
     // This metric will be dropped instead of queued up.
-    client.enqueue(GaugeMetric(name = "d", value = 4.0))
+    client.enqueue(GaugeMetric(name = "b", value = 4.0))
 
-    // We drain the buffer and the client's queue.
-    val messages = sender.awaitMessages(3)
-    messages should be (List("a:1|g", "b:2|g", "c:3|g"))
+    // // We drain the buffer and the client's queue.
+    // val messages = sender.awaitMessages(3)
+    client.queue.peek should be (GaugeMetric(name = "a", value = 1.0))
+
+    // Clear things out
+    client.queue.clear
 
     // Now that things are empty again, this will flow through.
-    client.enqueue(GaugeMetric(name = "e", value = 5.0))
-    sender.awaitMessage() should be ("e:5|g")
+    client.enqueue(GaugeMetric(name = "c", value = 5.0))
+    client.queue.peek should be (GaugeMetric(name = "c", value = 5.0))
 
-    // A bit flakey, since we set a short time limit, but this is just a sanity
-    // check that we have had no further messages sent, excluding the
-    // possibility that 'e' and 'd' were just reordered.
-    an [Exception] should be thrownBy sender.awaitMessage(System.currentTimeMillis + 50)
-
-    client.shutdown
+    client.queue.size should be (1)
   }
 }
