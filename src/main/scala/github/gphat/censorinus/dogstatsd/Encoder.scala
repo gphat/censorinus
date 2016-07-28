@@ -14,8 +14,8 @@ object Encoder extends MetricEncoder {
     case sc: ServiceCheckMetric =>
       Some(encodeServiceCheck(sc))
 
-    case e: EventMetric =>
-      Some(encodeEvent(e))
+    case em: EventMetric =>
+      Some(encodeEvent(em))
 
     case nm: NumericMetric if(nm.value.isInfinite || nm.value.isNaN) =>
       // Note, we protect against infinity, or NaN which we'll drop via the
