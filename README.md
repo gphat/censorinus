@@ -156,3 +156,4 @@ that along to this library.
 
 * All metric names and such are encoded as UTF-8.
 * If you prefer to catch your own exceptions or log them somehow when failing to deliver or resolve the upstream target, look for `allowExceptions` on your client of choice and set to true!
+* Infinite values are dropped silently, since they can't be expressed downstream.

@@ -17,14 +17,23 @@ object Encoder extends MetricEncoder {
     case e: EventMetric =>
       Some(encodeEvent(e))
 
-    case sm: SampledMetric =>
-      val sb = new StringBuilder()
-      encodeBaseMetric(sb, metric)
-      encodeSampleRate(sb, sm.sampleRate)
-      encodeTags(sb, metric.tags)
-      Some(sb.toString)
+    case nm: NumericMetric if(!nm.value.isInfinite) => {
+      // Note, we protect against infinity, which we'll drop via the default
+      // case.
+      nm match {
+        case sm: SampledMetric =>
+          val sb = new StringBuilder()
+          encodeBaseMetric(sb, metric)
+          encodeSampleRate(sb, sm.sampleRate)
+          encodeTags(sb, metric.tags)
+          Some(sb.toString)
 
-    case _: Metric =>
+        case _: Metric =>
+          Some(encodeSimpleMetric(metric))
+      }
+    }
+
+    case sm: StringMetric =>
       Some(encodeSimpleMetric(metric))
 
     case _ =>
