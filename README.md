@@ -11,6 +11,7 @@ Censorinus is a Scala \*StatsD client with multiple personalities.
 * [DogStatsD Compatibility](http://docs.datadoghq.com/guides/dogstatsd/#datagram-format)
 * UDP only
 * Option for max queue size when using asynchronous.
+* "Swallows" relevant exceptions (IO, Unresolveable) by **default** to prevent runtime errors breaking your service
 
 # Using It
 
@@ -154,3 +155,4 @@ that along to this library.
 # Notes
 
 * All metric names and such are encoded as UTF-8.
+* If you prefer to catch your own exceptions or log them somehow when failing to deliver or resolve the upstream target, look for `allowExceptions` on your client of choice and set to true!
