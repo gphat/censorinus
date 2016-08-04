@@ -15,12 +15,13 @@ Censorinus is a Scala \*StatsD client with multiple personalities.
 
 # Using It
 
-```scala
-// Add the Dep
-libraryDependencies += "com.github.gphat" %% "censorinus" % "2.1.3"
+Censorinus is available on Maven Central.
 
-// And a the resolver
-resolvers += "gphat" at "https://raw.github.com/gphat/mvn-repo/master/releases/",
+```scala
+// Add the Dep for Scala 2.11
+libraryDependencies += "com.github.gphat" % "censorinus_2.11" % "2.1.3"
+// Or for Scala 2.10
+libraryDependencies += "com.github.gphat" % "censorinus_2.10" % "2.1.3"
 ```
 
 You should create a single instance of a client reuse it throughout your
