@@ -2,28 +2,26 @@ import sbt._
 import sbt.Keys._
 
 object Publish {
-  lazy val defaultRepo = Some(Resolver.file("file", new File("/Users/gphat/src/mvn-repo/releases")))
-
-  def getPublishTo(snapshot: Boolean) = {
-    val providedRepo =
-      if(snapshot) {
-        val url = sys.props.get("publish.snapshots.url")
-        url.map("snapshots" at _)
-      } else {
-        val url = sys.props.get("publish.releases.url")
-        url.map("releases" at _)
-      }
-
-    providedRepo orElse defaultRepo
-  }
-
   lazy val settings = Seq(
     homepage := Some(url("http://github.com/gphat/censorinus")),
     publishMavenStyle := true,
-    publishTo := getPublishTo(isSnapshot.value),
+    publishTo := {
+        val nexus = "https://oss.sonatype.org/"
+        if (isSnapshot.value)
+            Some("snapshots" at nexus + "content/repositories/snapshots")
+        else
+            Some("releases"  at nexus + "service/local/staging/deploy/maven2")
+    },
     publishArtifact in Test := false,
     pomIncludeRepository := Function.const(false),
     pomExtra := (
+      <licenses>
+       <license>
+        <name>MIT</name>
+        <url>https://opensource.org/licenses/MIT</url>
+        <distribution>repo</distribution>
+       </license>
+      </licenses>
       <scm>
         <url>git@github.com:gphat/censorinus.git</url>
         <connection>scm:git:git@github.com:gphat/censorinus.git</connection>
@@ -35,13 +33,7 @@ object Publish {
           <organization>Cory Industries Ltd Inc</organization>
           <organizationUrl>https://onemogin.com</organizationUrl>
         </developer>
-      </developers>)
-  )
-
-  lazy val skip = Seq(
-    publishTo := getPublishTo(isSnapshot.value),
-    publish := (),
-    publishLocal := (),
-    publishArtifact := false
+      </developers>
+    )
   )
 }
