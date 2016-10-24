@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.1.4] - 2016-10-19
+
+## Fixed
+* Newlines in events and service check are now properly escaped.
+
 ## [2.1.3] - 2016-07-28
 
 ### Changed

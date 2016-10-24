@@ -62,14 +62,15 @@ object Encoder extends MetricEncoder {
 
   def encodeEvent(sc: EventMetric): String = {
     val sb = new StringBuilder()
+    val escapedText = escapeDogstatsd(sc.text)
     sb.append("_e{")
     sb.append(sc.name.length.toString)
     sb.append(",")
-    sb.append(sc.text.length.toString)
+    sb.append(escapedText.length.toString)
     sb.append("}:")
     sb.append(sc.name)
     sb.append("|")
-    sb.append(sc.text)
+    sb.append(escapedText)
     sc.timestamp.foreach({ d =>
       sb.append("|d:")
       sb.append(d.toString)
@@ -138,9 +139,13 @@ object Encoder extends MetricEncoder {
     encodeTags(sb, sc.tags)
     sc.message.foreach({ m =>
       sb.append("|m:")
-      sb.append(m)
+      sb.append(escapeDogstatsd(m))
     })
     sb.toString
+  }
+
+  private def escapeDogstatsd(value: String): String = {
+    value.replace("\n", "\\\\n")
   }
 
   // Encodes the base metric and tags only. This covers most metrics.
