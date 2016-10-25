@@ -12,6 +12,8 @@ resolvers ++= Seq("snapshots", "releases").map(Resolver.sonatypeRepo)
 libraryDependencies += "org.scalactic" %% "scalactic" % "2.2.6" % "test"
 libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % "test"
 
+releasePublishArtifactsAction := PgpKeys.publishSigned.value
+
 Publish.settings
 
 scalastyleFailOnError := true
