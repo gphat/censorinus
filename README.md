@@ -19,9 +19,9 @@ Censorinus is available on Maven Central.
 
 ```scala
 // Add the Dep for Scala 2.11
-libraryDependencies += "com.github.gphat" % "censorinus_2.11" % "2.1.4"
+libraryDependencies += "com.github.gphat" % "censorinus_2.11" % "2.1.5"
 // Or for Scala 2.10
-libraryDependencies += "com.github.gphat" % "censorinus_2.10" % "2.1.4"
+libraryDependencies += "com.github.gphat" % "censorinus_2.10" % "2.1.5"
 ```
 
 You should create a single instance of a client reuse it throughout your
