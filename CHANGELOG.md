@@ -4,6 +4,7 @@
 
 ### Changed
 * Publish for Scala 2.12 and bump version deps.
+* Removed Scala 2.10 from targets.
 
 ## [2.1.4] - 2016-10-19
 
@@ -26,7 +27,6 @@
 ### Changed
 * Updated error messages for when `maxQueueSize` is hit.
 * Cleaned up code around emptying queue to be simpler.
-
 
 ## [2.1.1] - 2016-05-17
 

@@ -3,7 +3,7 @@ organization := "com.github.gphat"
 name := "censorinus"
 
 scalaVersion := "2.12.2"
-crossScalaVersions := Seq("2.10.6", "2.11.11", "2.12.2")
+crossScalaVersions := Seq("2.11.11", "2.12.2")
 
 scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
