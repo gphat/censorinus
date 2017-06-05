@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.1.7] - 2017-06-05
+
+### Changed
+* Publish for Scala 2.12 and bump version deps.
+
 ## [2.1.4] - 2016-10-19
 
 ## Fixed

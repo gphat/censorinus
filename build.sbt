@@ -9,8 +9,8 @@ scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
 resolvers ++= Seq("snapshots", "releases").map(Resolver.sonatypeRepo)
 
-libraryDependencies += "org.scalactic" %% "scalactic" % "2.2.6" % "test"
-libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.6" % "test"
+libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.1" % "test"
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
 
 releasePublishArtifactsAction := PgpKeys.publishSigned.value
 
