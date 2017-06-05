@@ -1,6 +1,6 @@
 # Changelog
 
-## [2.1.7] - 2017-06-05
+## [2.1.6] - 2017-06-05
 
 ### Changed
 * Publish for Scala 2.12 and bump version deps.
