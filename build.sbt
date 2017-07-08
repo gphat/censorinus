@@ -9,6 +9,8 @@ scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 
 resolvers ++= Seq("snapshots", "releases").map(Resolver.sonatypeRepo)
 
+libraryDependencies += "com.google.protobuf" % "protobuf-java" % "3.2.0"
+
 libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.3" % "test"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.3" % "test"
 
