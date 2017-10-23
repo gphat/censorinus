@@ -153,6 +153,19 @@ methods to send the metric regardless. Note that the sample rate will *also* be
 sent. This is a convenience method to allow you to do your own sampling and pass
 that along to this library.
 
+## Threshold-based
+
+You can supply an optional `samplingThreshold` to the client that specifies a
+ratio at which the client will begin sampling, overriding any sampling value
+in the metric itself. When the `samplingThreshold` is met it is inverted by
+subtracting the ratio from 1.0. (e.g. a `samplingThreshold` of `.6` will result
+in a value of `.4`) and all incoming metrics sampled using this dynamic rate.
+
+This is a rather naive mechanism for sampling and it applies universally
+regardless of the desired sampling of the incoming metric. It is provided as an
+improvement over situations when the `maxQueueSize` is met and **no** metrics
+are emitted.
+
 # Notes
 
 * All metric names and such are encoded as UTF-8.
