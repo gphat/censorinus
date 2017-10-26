@@ -2,6 +2,7 @@ package github.gphat.censorinus
 
 import java.text.DecimalFormat
 import java.util.concurrent._
+import java.util.concurrent.atomic.AtomicLong
 import java.util.logging.Logger
 
 import scala.util.control.NonFatal
@@ -23,7 +24,9 @@ class Client(
   prefix: String = "",
   val defaultSampleRate: Double = 1.0,
   asynchronous: Boolean = true,
-  maxQueueSize: Option[Int] = None
+  maxQueueSize: Option[Int] = None,
+  consecutiveDropWarnThreshold: Long = 1000,
+  val consecutiveDroppedMetrics: AtomicLong = new AtomicLong(0)
 ) {
   private[this] val log: Logger = Logger.getLogger(classOf[Client].getName)
 
@@ -87,11 +90,15 @@ class Client(
       if(asynchronous) {
         // Queue it up! Leave encoding for later so get we back as soon as we can.
         if (!queue.offer(metric)) {
-          log.warning("Unable to enqueue metric, queue is full. Metric was dropped. " +
-            "If this is during steady state, consider decreasing the defaultSampleRate, " +
-            "but if this periodic, consider increasing the maxQueueSize.")
+          val dropped = consecutiveDroppedMetrics.incrementAndGet
+          if (dropped == 1 || (dropped % consecutiveDropWarnThreshold) == 0) {
+            log.warning("Queue is full. Metric was dropped. " +
+              "Consider decreasing the defaultSampleRate or increasing the maxQueueSize."
+            )
+          }
         }
       } else {
+        consecutiveDroppedMetrics.set(0)
         // Just send it.
         send(metric)
       }
