@@ -65,6 +65,8 @@ class ClientSpec extends FlatSpec with Matchers with Eventually {
     // This metric will be dropped instead of queued up.
     client.enqueue(GaugeMetric(name = "b", value = 4.0))
 
+    client.consecutiveDroppedMetrics.get should be (2)
+
     // // We drain the buffer and the client's queue.
     // val messages = sender.awaitMessages(3)
     client.queue.peek should be (GaugeMetric(name = "a", value = 1.0))
@@ -78,6 +80,4 @@ class ClientSpec extends FlatSpec with Matchers with Eventually {
 
     client.queue.size should be (1)
   }
-
-  it should ""
 }

@@ -26,7 +26,7 @@ class Client(
   asynchronous: Boolean = true,
   maxQueueSize: Option[Int] = None,
   consecutiveDropWarnThreshold: Long = 1000,
-  consecutiveDroppedMetrics: AtomicLong = new AtomicLong(0)
+  val consecutiveDroppedMetrics: AtomicLong = new AtomicLong(0)
 ) {
   private[this] val log: Logger = Logger.getLogger(classOf[Client].getName)
 
