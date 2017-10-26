@@ -113,7 +113,8 @@ that thread can fetch an item from the head of the queue.
 You may provide a `maxQueueSize` when creating a client. Doing so will prevent
 the accidental unbounded growth of the metric send queue. If the limit is reached
 then new metrics **will be dropped** until the queue has room again. Logs will
-be emitted in this case.
+be emitted in this case for every `consecutiveDropWarnThreshold` drops. You can
+adjust this when instantiating a client.
 
 **Note:** You can call `c.shutdown` to forcibly end things. The threads in this
 executor are flagged as deaemon threads so ending your program will cause any
