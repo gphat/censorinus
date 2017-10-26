@@ -113,7 +113,8 @@ that thread can fetch an item from the head of the queue.
 You may provide a `maxQueueSize` when creating a client. Doing so will prevent
 the accidental unbounded growth of the metric send queue. If the limit is reached
 then new metrics **will be dropped** until the queue has room again. Logs will
-be emitted in this case.
+be emitted in this case for every `consecutiveDropWarnThreshold` drops. You can
+adjust this when instantiating a client.
 
 **Note:** You can call `c.shutdown` to forcibly end things. The threads in this
 executor are flagged as deaemon threads so ending your program will cause any
@@ -152,19 +153,6 @@ You can also supply a `bypassSampler = true` argument to any of the client's
 methods to send the metric regardless. Note that the sample rate will *also* be
 sent. This is a convenience method to allow you to do your own sampling and pass
 that along to this library.
-
-## Threshold-based
-
-You can supply an optional `samplingThreshold` to the client that specifies a
-ratio at which the client will begin sampling, overriding any sampling value
-in the metric itself. When the `samplingThreshold` is met it is inverted by
-subtracting the ratio from 1.0. (e.g. a `samplingThreshold` of `.6` will result
-in a value of `.4`) and all incoming metrics sampled using this dynamic rate.
-
-This is a rather naive mechanism for sampling and it applies universally
-regardless of the desired sampling of the incoming metric. It is provided as an
-improvement over situations when the `maxQueueSize` is met and **no** metrics
-are emitted.
 
 # Notes
 

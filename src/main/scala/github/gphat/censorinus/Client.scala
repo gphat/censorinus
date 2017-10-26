@@ -17,7 +17,6 @@ import scala.util.control.NonFatal
   * @param defaultSampleRate A sample rate default to be used for all metric methods. Defaults to 1.0
   * @param asynchronous True if you want the client to asynch, false for blocking!
   * @param maxQueueSize Maximum amount of metrics allowed to be queued at a time.
-  * @param samplingThreshold The ratio of queue fullness (as a float) at which to begin sampling.
   */
 class Client(
   encoder: MetricEncoder,
@@ -26,8 +25,8 @@ class Client(
   val defaultSampleRate: Double = 1.0,
   asynchronous: Boolean = true,
   maxQueueSize: Option[Int] = None,
-  samplingThreshold: Double = 1.0,
-  queueDepth: AtomicLong = new AtomicLong(),
+  consecutiveDropWarnThreshold: Long = 1000,
+  consecutiveDroppedMetrics: AtomicLong = new AtomicLong(0)
 ) {
   private[this] val log: Logger = Logger.getLogger(classOf[Client].getName)
 
@@ -87,30 +86,19 @@ class Client(
   }
 
   def enqueue(metric: Metric, sampleRate: Double = defaultSampleRate, bypassSampler: Boolean = false): Unit = {
-
-    val finalSampleRate = maxQueueSize.map(mqs => {
-      val depthRatio = queueDepth.get / mqs
-      if(depthRatio >= samplingThreshold) {
-        // If we've passed the depth threshold, turn our sample rate into the
-        // inverse of the ratio, causing censorinus to heavily sample as we get
-        // close to full!
-        1.0 - depthRatio
-      } else {
-        sampleRate
-      }
-    }).getOrElse(sampleRate)
-
-    if(bypassSampler || finalSampleRate == 1.0 || ThreadLocalRandom.current.nextDouble <= sampleRate) {
+    if(bypassSampler || sampleRate == 1.0 || ThreadLocalRandom.current.nextDouble <= sampleRate) {
       if(asynchronous) {
         // Queue it up! Leave encoding for later so get we back as soon as we can.
         if (!queue.offer(metric)) {
-          queueDepth.incrementAndGet
-          log.warning("Unable to enqueue metric, queue is full. Metric was dropped. " +
-            "If this is during steady state, consider decreasing the defaultSampleRate, " +
-            "but if this periodic, consider increasing the maxQueueSize.")
+          val dropped = consecutiveDroppedMetrics.incrementAndGet
+          if (dropped == 1 || (dropped % consecutiveDropWarnThreshold) == 0) {
+            log.warning("Queue is full. Metric was dropped. " +
+              "Consider decreasing the defaultSampleRate or increasing the maxQueueSize."
+            )
+          }
         }
       } else {
-        queueDepth.incrementAndGet
+        consecutiveDroppedMetrics.set(0)
         // Just send it.
         send(metric)
       }
@@ -127,7 +115,6 @@ class Client(
 
   // Encode and send a metric to something approximating statsd.
   private def send(metric: Metric): Unit = {
-    queueDepth.decrementAndGet()
     encoder.encode(metric) match {
       case Some(message) =>
         sender.send(message)
