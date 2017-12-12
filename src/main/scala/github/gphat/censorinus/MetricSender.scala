@@ -4,7 +4,7 @@ trait MetricSender {
 
   def send(message: String): Unit
 
-  def shutdown: Unit
+  def shutdown(): Unit
 }
 
 object MetricSender {

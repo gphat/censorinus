@@ -1,8 +1,6 @@
 package github.gphat.censorinus
 
 import org.scalatest._
-import scala.collection.mutable.ArrayBuffer
-import github.gphat.censorinus.statsd.Encoder
 
 class DogStatsDClientSpec extends FlatSpec with Matchers with BeforeAndAfter {
 
