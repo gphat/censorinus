@@ -1,6 +1,5 @@
 package github.gphat.censorinus
 
-import java.text.DecimalFormat
 import java.util.concurrent._
 import java.util.concurrent.atomic.AtomicLong
 import java.util.logging.Logger

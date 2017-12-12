@@ -3,7 +3,6 @@ package github.gphat.censorinus
 import java.util.concurrent.{ LinkedBlockingQueue, TimeUnit }
 import org.scalatest._
 import org.scalatest.concurrent.Eventually
-import scala.collection.mutable.ArrayBuffer
 import github.gphat.censorinus.statsd.Encoder
 
 object TestSender {

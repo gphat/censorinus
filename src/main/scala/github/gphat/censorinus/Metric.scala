@@ -1,19 +1,19 @@
 package github.gphat.censorinus
 
-trait Metric {
+sealed trait Metric {
   def name: String
   def tags: Seq[String]
 }
 
-trait NumericMetric {
+sealed trait NumericMetric {
   def value: Double
 }
 
-trait SampledMetric {
+sealed trait SampledMetric {
   def sampleRate: Double
 }
 
-trait StringMetric {
+sealed trait StringMetric {
   def value: String
 }
 

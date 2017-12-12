@@ -35,6 +35,7 @@ object Encoder extends MetricEncoder {
       // This is the only string based-metric
       case nm: NumericMetric => format.format(nm.value)
       case sm: StringMetric => sm.value
+      case _ => ""
     }
     sb.append(finalValue)
     sb.append('|')
@@ -44,15 +45,16 @@ object Encoder extends MetricEncoder {
       case _: MeterMetric => "m"
       case _: SetMetric => "s"
       case _: TimerMetric => "ms"
+      case _ => ""
     }
-    sb.append(metricType)
+    val _ = sb.append(metricType)
   }
 
   // Encodes the sample rate, so that counters are adjusted appropriately.
   def encodeSampleRate(sb: StringBuilder, sampleRate: Double): Unit = {
     if(sampleRate < 1.0) {
       sb.append("|@")
-      sb.append(format.format(sampleRate))
+      val _ = sb.append(format.format(sampleRate))
     }
   }
 

@@ -2,9 +2,6 @@ package github.gphat.censorinus.example
 
 import github.gphat.censorinus.DogStatsDClient
 
-import java.util.UUID
-import scala.util.Random
-
 object Benchmark {
 
   def main(args: Array[String]): Unit = {

@@ -1,10 +1,10 @@
 package github.gphat.censorinus
 
-import java.net.{InetSocketAddress,SocketException}
 import java.nio.ByteBuffer
-import java.nio.channels.UnresolvedAddressException
+import java.net.InetSocketAddress
 import java.nio.channels.DatagramChannel
 import java.nio.charset.StandardCharsets
+import scala.util.{ Try, Success, Failure }
 
 class UDPSender(
   hostname: String = "localhost",
@@ -14,20 +14,16 @@ class UDPSender(
 
   lazy val clientSocket = DatagramChannel.open.connect(new InetSocketAddress(hostname, port))
 
-  def send(message: String): Unit = {
-    try {
+  def send(message: String): Unit =
+    Try {
       clientSocket.write(ByteBuffer.wrap(message.getBytes(StandardCharsets.UTF_8)))
-    } catch {
-      case se @ (_ : SocketException | _ : UnresolvedAddressException) => {
-        // Check if we're allowing exceptions and rethrow if so. We didn't use
-        // a guard on the case because then we'd need a second case to catch
-        // the !allowExceptions case!
-        if(allowExceptions) {
-          throw se
-        }
-      }
+    } match {
+      case Failure(ex) =>
+        if( allowExceptions) 
+          throw ex
+      case Success(_) =>
     }
-  }
+
 
   def shutdown: Unit = clientSocket.close
 }

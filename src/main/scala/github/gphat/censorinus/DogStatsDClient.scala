@@ -2,9 +2,6 @@ package github.gphat.censorinus
 
 import github.gphat.censorinus.dogstatsd.Encoder
 
-import java.util.concurrent._
-import scala.util.Random
-
 object DogStatsDClient {
   val SERVICE_CHECK_OK = 0
   val SERVICE_CHECK_WARNING = 1
