@@ -4,6 +4,7 @@ import github.gphat.censorinus.dogstatsd.Encoder
 
 import java.util.concurrent._
 import scala.util.Random
+import scala.util.matching.Regex
 
 object DogStatsDClient {
   val SERVICE_CHECK_OK = 0
@@ -28,6 +29,7 @@ object DogStatsDClient {
   * @param asynchronous True if you want the client to asynch, false for blocking!
   * @param maxQueueSize Maximum amount of metrics allowed to be queued at a time.
   * @param allowExceptions If false, any `SocketException`s will be swallowed silently
+  * @param metricRegex A regex used to "cleanse" metric names for Datadog
   */
 class DogStatsDClient(
   hostname: String = "localhost",
@@ -36,7 +38,8 @@ class DogStatsDClient(
   defaultSampleRate: Double = 1.0,
   asynchronous: Boolean = true,
   maxQueueSize: Option[Int] = None,
-  allowExceptions: Boolean = false
+  allowExceptions: Boolean = false,
+  metricRegex: Option[Regex] = None
 ) extends Client(
   sender = new UDPSender(hostname = hostname, port = port, allowExceptions = allowExceptions),
   encoder = Encoder,
@@ -219,4 +222,9 @@ class DogStatsDClient(
     sampleRate,
     bypassSampler
   )
+
+  override def makeName(name: String): String = {
+    val n = super.makeName(name)
+    metricRegex.map({ r => r.replaceAllIn(n, "_") }).getOrElse(n)
+  }
 }

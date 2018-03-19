@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.1.7] - 2018-03-19
+
+### Changed
+* Add metricRegex as optional arg to clients for converting incoming metric names
+
 ## [2.1.6] - 2017-06-05
 
 ### Changed
@@ -14,7 +19,7 @@
 ## [2.1.3] - 2016-07-28
 
 ### Changed
-* Exceptions that could've been emitted by ending UDP datagrams are now swalloed by default.
+* Exceptions that could've been emitted by ending UDP datagrams are now swallowed by default.
 * Added `allowExceptions` as a client instantiation option to control exception handling.
 * "Invalid" gauge values `Double.NaN` as well as infinite values are now silently dropped.
 

@@ -2,6 +2,7 @@ package github.gphat.censorinus
 
 import org.scalatest._
 import scala.collection.mutable.ArrayBuffer
+import scala.util.matching.Regex
 import github.gphat.censorinus.statsd.Encoder
 
 class DogStatsDClientSpec extends FlatSpec with Matchers with BeforeAndAfter {
@@ -92,5 +93,12 @@ class DogStatsDClientSpec extends FlatSpec with Matchers with BeforeAndAfter {
     s.name should be ("poop.foobar")
     s.value should be ("fart")
     s.tags should be (Seq("foo:bar"))
+  }
+
+  it should "cleanse metric names" in {
+    val client2 = new DogStatsDClient(prefix = "poop", metricRegex = Some(new Regex("[^a-zA-Z_\\.]")))
+    val result = client2.makeName("this.is.foo-bar")
+    result should be ("poop.this.is.foo_bar")
+    client2.shutdown
   }
 }
