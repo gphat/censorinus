@@ -96,7 +96,7 @@ class DogStatsDClientSpec extends FlatSpec with Matchers with BeforeAndAfter {
   }
 
   it should "cleanse metric names" in {
-    val client2 = new DogStatsDClient(prefix = "poop", metricRegex = Some(new Regex("[^a-zA-Z_\\.]")))
+    val client2 = new DogStatsDClient(prefix = "poop", metricRegex = Some(github.gphat.censorinus.DogStatsDClient.DEFAULT_VALID_METRIC_REGEX))
     val result = client2.makeName("this.is.foo-bar")
     result should be ("poop.this.is.foo_bar")
     client2.shutdown

@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.1.11] - 2018-03-20
+
+### Changed
+* Add constant `github.gphat.censorinus.DogStatsDClient.DEFAULT_VALID_METRIC_REGEX` for use with metricRegex option
+
 ## [2.1.10] - 2018-03-20
 
 ### Changed
