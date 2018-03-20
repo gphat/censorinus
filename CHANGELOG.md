@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.1.10] - 2018-03-20
+
+### Changed
+* Decrease allocations when sending metrics. Thanks [@johnynek](https://github.com/johnynek)
+
 ## [2.1.7] - 2018-03-19
 
 ### Changed
