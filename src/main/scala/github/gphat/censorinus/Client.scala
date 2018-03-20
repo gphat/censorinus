@@ -58,7 +58,8 @@ class Client(
   executor.foreach { ex =>
     val task = new Runnable {
       def tick(): Unit = try {
-        Option(queue.take).foreach(send)
+        val taken = queue.take()
+        if (taken != null) send(taken) else ()
       } catch {
         case _: InterruptedException => Thread.currentThread.interrupt
         case NonFatal(exception) => {
@@ -86,7 +87,7 @@ class Client(
   }
 
   def enqueue(metric: Metric, sampleRate: Double = defaultSampleRate, bypassSampler: Boolean = false): Unit = {
-    if(bypassSampler || sampleRate == 1.0 || ThreadLocalRandom.current.nextDouble <= sampleRate) {
+    if(bypassSampler || sampleRate >= 1.0 || ThreadLocalRandom.current.nextDouble <= sampleRate) {
       if(asynchronous) {
         // Queue it up! Leave encoding for later so get we back as soon as we can.
         if (!queue.offer(metric)) {
@@ -114,12 +115,11 @@ class Client(
   }
 
   // Encode and send a metric to something approximating statsd.
-  private def send(metric: Metric): Unit = {
+  private def send(metric: Metric): Unit =
     encoder.encode(metric) match {
       case Some(message) =>
         sender.send(message)
       case None =>
         log.warning(s"Unable to send metric: unsupported metric type `${metric}`")
     }
-  }
 }
