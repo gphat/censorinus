@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.1.12] - 2018-03-22
+
+* Fixed constant DEFAULT_VALID_METRIC_REGEX to allow 0-9
+
 ## [2.1.11] - 2018-03-20
 
 ### Changed

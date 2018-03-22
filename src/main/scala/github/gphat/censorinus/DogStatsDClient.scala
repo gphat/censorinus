@@ -7,7 +7,7 @@ import scala.util.Random
 import scala.util.matching.Regex
 
 object DogStatsDClient {
-  val DEFAULT_VALID_METRIC_REGEX = new Regex("[^a-zA-Z_\\.]")
+  val DEFAULT_VALID_METRIC_REGEX = new Regex("[^a-zA-Z0-9_\\.]")
   val SERVICE_CHECK_OK = 0
   val SERVICE_CHECK_WARNING = 1
   val SERVICE_CHECK_CRITICAL = 2
