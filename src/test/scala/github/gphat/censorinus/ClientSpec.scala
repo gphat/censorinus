@@ -1,5 +1,7 @@
 package github.gphat.censorinus
 
+import java.nio.ByteBuffer
+import java.nio.charset.StandardCharsets
 import java.util.concurrent.{ LinkedBlockingQueue, TimeUnit }
 import org.scalatest._
 import org.scalatest.concurrent.Eventually
@@ -27,8 +29,9 @@ class TestSender(val maxMessages: Int = Int.MaxValue) extends MetricSender {
   def awaitMessages(n: Int, deadline: Long = TestSender.defaultDeadline): List[String] =
     List.fill(n)(awaitMessage(deadline))
 
-  def send(message: String): Unit = {
-    if (!buffer.offer(message, 1, TimeUnit.MINUTES)) {
+  def send(message: ByteBuffer): Unit = {
+    val strMessage = StandardCharsets.UTF_8.newDecoder().decode(message).toString
+    if (!buffer.offer(strMessage, 1, TimeUnit.MINUTES)) {
       throw new Exception("too much time required for test")
     }
   }
