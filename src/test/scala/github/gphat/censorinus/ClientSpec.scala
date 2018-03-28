@@ -3,6 +3,9 @@ package github.gphat.censorinus
 import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
 import java.util.concurrent.{ LinkedBlockingQueue, TimeUnit }
+import org.scalacheck.{Arbitrary, Gen}
+import org.scalacheck.Arbitrary.arbitrary
+import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest._
 import org.scalatest.concurrent.Eventually
 import scala.collection.mutable.ArrayBuffer
@@ -39,7 +42,7 @@ class TestSender(val maxMessages: Int = Int.MaxValue) extends MetricSender {
   def shutdown: Unit = ()
 }
 
-class ClientSpec extends FlatSpec with Matchers with Eventually {
+class ClientSpec extends FlatSpec with Matchers with Eventually with GeneratorDrivenPropertyChecks {
 
   "ClientSpec" should "deal with gauges" in {
     val sender = new TestSender()
@@ -83,4 +86,72 @@ class ClientSpec extends FlatSpec with Matchers with Eventually {
 
     client.queue.size should be (1)
   }
+
+  private def batchAndDecode(batcher: Client.Batcher, lines: Iterator[String]): Vector[String] = {
+    var result = Vector.empty[String]
+    batcher.batch(lines) { buf =>
+      result = result :+ StandardCharsets.UTF_8.newDecoder().decode(buf).toString
+    }
+    result
+  }
+
+  val maxMetricLength: Int = 30
+
+  case class MetricLines(lines: Vector[String]) {
+    def iterator: Iterator[String] = lines.iterator
+  }
+
+  val shortLines: Gen[String] = arbitrary[String]
+    .map { s =>
+      // We want the final encoded size to be less than maxMetricLength, so
+      // we do a janky thing here.
+      Iterator.from(1)
+        .map { k =>
+          val len = s.length / k
+          s.substring(0, math.min(s.length, len))
+        }
+        .find(_.getBytes("utf-8").size < maxMetricLength)
+        .get
+    }
+
+  implicit val arbMetricLines: Arbitrary[MetricLines] =
+    Arbitrary(Gen.listOf(shortLines).map(_.toVector).map(MetricLines))
+
+  def batcher(newBatcher: => Client.Batcher) {
+    it should "batch metrics with new lines" in {
+      forAll { (lines: MetricLines) =>
+        assert(batchAndDecode(newBatcher, lines.iterator).mkString("\n") == lines.iterator.mkString("\n"))
+      }
+    }
+
+    it should "batch a single metric" in {
+      forAll(shortLines) { (line: String) =>
+        assert(batchAndDecode(newBatcher, Iterator.single(line)) == Vector(line))
+      }
+    }
+  }
+
+  "Client.Batched" should "batch multiple metrics into byte buffers" in {
+    val batcher = Client.Batched(10)
+    assert(batchAndDecode(batcher, Iterator("abc", "def", "ghi")) == Vector("abc\ndef", "ghi"))
+    assert(batchAndDecode(batcher, Iterator("abc", "de", "ghi")) == Vector("abc\nde\nghi"))
+    assert(batchAndDecode(batcher, Iterator("abc", "def", "ghi", "jk", "lm", "no")) == Vector("abc\ndef", "ghi\njk\nlm", "no"))
+  }
+
+  it should "truncate the first metric if it is too long" in {
+    val batcher = Client.Batched(11)
+    assert(batchAndDecode(batcher, Iterator("123456789011")) == Vector("12345678901"))
+    assert(batchAndDecode(batcher, Iterator("123456789011121314")) == Vector("12345678901"))
+  }
+
+  it should behave like batcher(Client.Batched(maxMetricLength))
+
+  "Client.Unbatched" should "not batch metrics" in {
+    forAll { (lines: Vector[String]) =>
+      val batcher = Client.Unbatched
+      assert(batchAndDecode(batcher, lines.iterator) == lines)
+    }
+  }
+
+  it should behave like batcher(Client.Batched(maxMetricLength))
 }

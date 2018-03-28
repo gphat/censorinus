@@ -43,7 +43,7 @@ class Client(
 
   private[this] val batcher: Client.Batcher = maxBatchSize match {
     case Some(bufSize) if maxQueueSize.isDefined =>
-      new Client.Batched(bufSize)
+      Client.Batched(bufSize)
     case Some(bufSize) =>
       log.warning(s"maxBatchSize=$bufSize ignored, because maxQueueSize is None")
       Client.Unbatched
@@ -201,7 +201,7 @@ object Client {
     }
   }
 
-  final class Batched(bufferSize: Int) extends Batcher {
+  final case class Batched(bufferSize: Int) extends Batcher {
     private[this] val buffer: ByteBuffer = ByteBuffer.allocate(bufferSize)
     private[this] val encoder: CharsetEncoder = StandardCharsets.UTF_8.newEncoder()
 
@@ -221,15 +221,15 @@ object Client {
           buffer.put('\n'.toByte)
           encoder.encode(CharBuffer.wrap(lines.head), buffer, true) match {
             case CoderResult.OVERFLOW =>
-              // On overflow, reset the buffer back to the last metric and
-              // flush it.
+              // On overflow, reset the buffer back to the last metric.
               buffer.reset()
-              buffer.rewind()
               cont = false
             case CoderResult.UNDERFLOW =>
               lines.next
           }
         }
+
+        buffer.flip()
         f(buffer)
       }
   }
