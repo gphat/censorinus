@@ -212,14 +212,14 @@ object Client {
 
         // We always try to send the first metric. If the line is too long,
         // then it just gets truncated.
-        encoder.encode(CharBuffer.wrap(lines.next), buffer, true)
+        encoder.encode(CharBuffer.wrap(lines.next), buffer, false)
 
         // Keep adding metrics in a loop until no more fit.
         var cont = true
         while (cont && buffer.remaining() > 1 && lines.hasNext) {
           buffer.mark()
           buffer.put('\n'.toByte)
-          encoder.encode(CharBuffer.wrap(lines.head), buffer, true) match {
+          encoder.encode(CharBuffer.wrap(lines.head), buffer, false) match {
             case CoderResult.OVERFLOW =>
               // On overflow, reset the buffer back to the last metric.
               buffer.reset()
@@ -229,6 +229,11 @@ object Client {
           }
         }
 
+        // Let the encoder know we're at the end of the input. UTF-8 won't dump
+        // any special characters or anything.
+        encoder.encode(CharBuffer.wrap(""), buffer, true)
+
+        // Make the buffer available to read and send it to the caller.
         buffer.flip()
         f(buffer)
       }

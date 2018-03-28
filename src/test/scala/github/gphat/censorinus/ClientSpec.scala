@@ -2,7 +2,7 @@ package github.gphat.censorinus
 
 import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
-import java.util.concurrent.{ LinkedBlockingQueue, TimeUnit }
+import java.util.concurrent.{CountDownLatch, LinkedBlockingQueue, TimeUnit}
 import org.scalacheck.{Arbitrary, Gen}
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
@@ -19,6 +19,7 @@ object TestSender {
 // until we empty it. This enables us to block the Client's sending thread
 // and artificially cause the client to accumulate metrics.
 class TestSender(val maxMessages: Int = Int.MaxValue) extends MetricSender {
+  var countDownLatch: CountDownLatch = new CountDownLatch(0)
   val buffer: LinkedBlockingQueue[String] =
     new LinkedBlockingQueue(maxMessages)
 
@@ -33,9 +34,12 @@ class TestSender(val maxMessages: Int = Int.MaxValue) extends MetricSender {
     List.fill(n)(awaitMessage(deadline))
 
   def send(message: ByteBuffer): Unit = {
-    val strMessage = StandardCharsets.UTF_8.newDecoder().decode(message).toString
-    if (!buffer.offer(strMessage, 1, TimeUnit.MINUTES)) {
-      throw new Exception("too much time required for test")
+    countDownLatch.countDown()
+    synchronized {
+      val strMessage = StandardCharsets.UTF_8.newDecoder().decode(message).toString
+      if (!buffer.offer(strMessage, 1, TimeUnit.MINUTES)) {
+        throw new Exception("too much time required for test")
+      }
     }
   }
 
@@ -50,6 +54,38 @@ class ClientSpec extends FlatSpec with Matchers with Eventually with GeneratorDr
     client.enqueue(GaugeMetric(name = "foobar", value = 1.0))
     val msg :: Nil = sender.awaitMessages(1)
     msg should be ("foobar:1|g")
+    client.shutdown
+  }
+
+  it should "batch metrics when batching is configured" in {
+    val sender = new TestSender()
+    val client = new Client(
+      encoder = Encoder,
+      sender = sender,
+      maxQueueSize = Some(10),
+      maxBatchSize = Some(20))
+
+    for (_ <- (0 to 2)) {
+      // By synchronizing on sender, we can block the client on the first metric
+      // which lets us fill up the queue with the remaining 5 metrics. The
+      // batcher will then work with a list of 5 metrics.
+      sender.countDownLatch = new CountDownLatch(1)
+      sender.synchronized {
+        client.enqueue(GaugeMetric(name = "a", value = 1.0))
+        // Wait for `send` to be called, otherwise we end up racing the polling
+        // thread in `client` to fill/drain the queue.
+        sender.countDownLatch.await()
+        client.enqueue(CounterMetric(name = "b", value = 1.0))
+        client.enqueue(GaugeMetric(name = "c", value = 2.0))
+        client.enqueue(CounterMetric(name = "d", value = 3.0))
+        client.enqueue(GaugeMetric(name = "e", value = -1.0))
+        client.enqueue(GaugeMetric(name = "f", value = 1.0))
+      }
+
+      val messages = sender.awaitMessages(3)
+      assert(messages == List("a:1|g", "b:1|c\nc:2|g\nd:3|c", "e:-1|g\nf:1|g"))
+    }
+
     client.shutdown
   }
 
@@ -87,6 +123,8 @@ class ClientSpec extends FlatSpec with Matchers with Eventually with GeneratorDr
     client.queue.size should be (1)
   }
 
+  // Batches `lines` using `batcher` and then decodes the resulting
+  // `ByteBuffer`s as UTF-8 strings and puts them back into a `Vector`.
   private def batchAndDecode(batcher: Client.Batcher, lines: Iterator[String]): Vector[String] = {
     var result = Vector.empty[String]
     batcher.batch(lines) { buf =>
@@ -95,13 +133,13 @@ class ClientSpec extends FlatSpec with Matchers with Eventually with GeneratorDr
     result
   }
 
+  // Maximum size of a metric we'll use for property-based testing.
+  // This is, basically, the max size of the "UDP packet".
   val maxMetricLength: Int = 30
 
-  case class MetricLines(lines: Vector[String]) {
-    def iterator: Iterator[String] = lines.iterator
-  }
-
-  val shortLines: Gen[String] = arbitrary[String]
+  // A generator whose strings, when UTF-8 encoded, are long larger than
+  // `maxMetricLength`.
+  val shortLine: Gen[String] = arbitrary[String]
     .map { s =>
       // We want the final encoded size to be less than maxMetricLength, so
       // we do a janky thing here.
@@ -114,8 +152,12 @@ class ClientSpec extends FlatSpec with Matchers with Eventually with GeneratorDr
         .get
     }
 
+  case class MetricLines(lines: Vector[String]) {
+    def iterator: Iterator[String] = lines.iterator
+  }
+
   implicit val arbMetricLines: Arbitrary[MetricLines] =
-    Arbitrary(Gen.listOf(shortLines).map(_.toVector).map(MetricLines))
+    Arbitrary(Gen.listOf(shortLine).map(_.toVector).map(MetricLines))
 
   def batcher(newBatcher: => Client.Batcher) {
     it should "batch metrics with new lines" in {
@@ -125,7 +167,7 @@ class ClientSpec extends FlatSpec with Matchers with Eventually with GeneratorDr
     }
 
     it should "batch a single metric" in {
-      forAll(shortLines) { (line: String) =>
+      forAll(shortLine) { (line: String) =>
         assert(batchAndDecode(newBatcher, Iterator.single(line)) == Vector(line))
       }
     }
