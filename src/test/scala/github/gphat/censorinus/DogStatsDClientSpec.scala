@@ -82,6 +82,16 @@ class DogStatsDClientSpec extends FlatSpec with Matchers with BeforeAndAfter {
     c.tags should be (Seq("foo:bar"))
   }
 
+  it should "deal with timers" in {
+    client.timer("foobar", 1.00001, tags = Seq("foo:bar"))
+    val m = client.queue.poll
+    m shouldBe a [TimerMetric]
+    val c = m.asInstanceOf[TimerMetric]
+    c.name should be ("poop.foobar")
+    c.value should be (1.00001)
+    c.tags should be (Seq("foo:bar"))
+  }
+
   it should "deal with sets" in {
     client.set("foobar", "fart", tags = Seq("foo:bar"))
     val m = client.queue.poll

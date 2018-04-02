@@ -32,16 +32,20 @@ class DogStatsDEncoderSpec extends FlatSpec with Matchers {
     val m = TimerMetric(name = "foobar", value = 1.0)
     Encoder.encode(m).get should be ("foobar:1|ms")
 
-    // Counter with optional sample rate
+    // Timer with optional sample rate
     val m1 = TimerMetric(name = "foobar", value = 1.0, sampleRate = 0.5)
     Encoder.encode(m1).get should be ("foobar:1|ms|@0.5")
+
+    // Timer with float
+    val m2 = TimerMetric(name = "foobar", value = 1.001)
+    Encoder.encode(m2).get should be ("foobar:1.001|ms")
   }
 
   it should "encode histograms" in {
     val m = HistogramMetric(name = "foobar", value = 1.0)
     Encoder.encode(m).get should be ("foobar:1|h")
 
-    // Counter with optional sample rate
+    // Histogram with optional sample rate
     val m1 = HistogramMetric(name = "foobar", value = 1.0, sampleRate = 0.5)
     Encoder.encode(m1).get should be ("foobar:1|h|@0.5")
   }

@@ -1,5 +1,9 @@
 # Changelog
 
+## [2.1.14] - Pending
+
+* Add test for handling floating point timer encoding
+
 ## [2.1.13] - 2018-04-01
 
 * Clients may specify a `maxBatchSize` to allow batching multiple metrics, separated by newlines. Be sure and choose a value smaller than the relevant MTU! Thanks [tixxit](https://github.com/tixxit)!
