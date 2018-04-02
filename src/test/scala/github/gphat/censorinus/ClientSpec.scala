@@ -8,7 +8,6 @@ import org.scalacheck.Arbitrary.arbitrary
 import org.scalatest.prop.GeneratorDrivenPropertyChecks
 import org.scalatest._
 import org.scalatest.concurrent.Eventually
-import scala.collection.mutable.ArrayBuffer
 import github.gphat.censorinus.statsd.Encoder
 
 object TestSender {
@@ -159,7 +158,7 @@ class ClientSpec extends FlatSpec with Matchers with Eventually with GeneratorDr
   implicit val arbMetricLines: Arbitrary[MetricLines] =
     Arbitrary(Gen.listOf(shortLine).map(_.toVector).map(MetricLines))
 
-  def batcher(newBatcher: => Client.Batcher) {
+  def batcher(newBatcher: => Client.Batcher): Unit = {
     it should "batch metrics with new lines" in {
       forAll { (lines: MetricLines) =>
         assert(batchAndDecode(newBatcher, lines.iterator).mkString("\n") == lines.iterator.mkString("\n"))
