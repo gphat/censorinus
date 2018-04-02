@@ -48,6 +48,10 @@ class DogStatsDEncoderSpec extends FlatSpec with Matchers {
     // Histogram with optional sample rate
     val m1 = HistogramMetric(name = "foobar", value = 1.0, sampleRate = 0.5)
     Encoder.encode(m1).get should be ("foobar:1|h|@0.5")
+
+    // Histo with float
+    val m2 = HistogramMetric(name = "foobar", value = 1.001)
+    Encoder.encode(m2).get should be ("foobar:1.001|h")
   }
 
   it should "encode sets" in {
