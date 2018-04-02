@@ -22,6 +22,12 @@ object DogStatsDClient {
 
 /** A DogStatsD client! You should create one of these and reuse it across
   * your application.
+  *
+  * If `maxBatchSize` is defined, metrics will be batched before being sent to
+  * datadog over UDP. The `maxBatchSize` param controls the maximum size of the
+  * UDP packet. This should generally be smaller than the maximum allowable
+  * size of UDP packets on the system.
+  *
   * @constructor Creates a new client instance
   * @param hostname the host to send metrics to, defaults to localhost
   * @param port the port to send metrics to, defaults to 8125
@@ -31,6 +37,7 @@ object DogStatsDClient {
   * @param maxQueueSize Maximum amount of metrics allowed to be queued at a time.
   * @param allowExceptions If false, any `SocketException`s will be swallowed silently
   * @param metricRegex A regex used to "cleanse" metric names for Datadog
+  * @param maxBatchSize maximum size of byte buffer supplied to `sender`
   */
 class DogStatsDClient(
   hostname: String = "localhost",
@@ -40,14 +47,16 @@ class DogStatsDClient(
   asynchronous: Boolean = true,
   maxQueueSize: Option[Int] = None,
   allowExceptions: Boolean = false,
-  metricRegex: Option[Regex] = None
+  metricRegex: Option[Regex] = None,
+  maxBatchSize: Option[Int] = None
 ) extends Client(
   sender = new UDPSender(hostname = hostname, port = port, allowExceptions = allowExceptions),
   encoder = Encoder,
   prefix = prefix,
   defaultSampleRate = defaultSampleRate,
   asynchronous = asynchronous,
-  maxQueueSize = maxQueueSize
+  maxQueueSize = maxQueueSize,
+  maxBatchSize = maxBatchSize
 ) {
   /** Emit a counter metric.
     * @param name The name of the metric

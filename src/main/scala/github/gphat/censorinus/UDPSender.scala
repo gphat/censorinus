@@ -4,7 +4,6 @@ import java.net.{InetSocketAddress,SocketException}
 import java.nio.ByteBuffer
 import java.nio.channels.UnresolvedAddressException
 import java.nio.channels.DatagramChannel
-import java.nio.charset.StandardCharsets
 
 class UDPSender(
   hostname: String = "localhost",
@@ -14,9 +13,9 @@ class UDPSender(
 
   lazy val clientSocket = DatagramChannel.open.connect(new InetSocketAddress(hostname, port))
 
-  def send(message: String): Unit = {
+  def send(message: ByteBuffer): Unit = {
     try {
-      clientSocket.write(ByteBuffer.wrap(message.getBytes(StandardCharsets.UTF_8)))
+      clientSocket.write(message)
     } catch {
       case se @ (_ : SocketException | _ : UnresolvedAddressException) => {
         // Check if we're allowing exceptions and rethrow if so. We didn't use
