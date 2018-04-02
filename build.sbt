@@ -5,7 +5,22 @@ name := "censorinus"
 scalaVersion := "2.12.4"
 crossScalaVersions := Seq("2.11.11", "2.12.2")
 
-scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
+scalacOptions ++= Seq(
+ "-encoding", "UTF-8",
+ "-language:_",
+ "-unchecked",
+ "-deprecation",
+ "-feature",
+ "-Xfatal-warnings",
+ // "-Xlint",
+ "-Yno-adapted-args",
+ "-Ywarn-dead-code",
+ "-Ywarn-numeric-widen",
+ "-Ywarn-value-discard",
+ "-Xfuture",
+ "-Ywarn-unused-import",
+ "-Ypartial-unification"
+)
 
 resolvers ++= Seq("snapshots", "releases").map(Resolver.sonatypeRepo)
 

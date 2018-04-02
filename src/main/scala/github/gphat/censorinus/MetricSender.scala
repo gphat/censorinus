@@ -1,7 +1,6 @@
 package github.gphat.censorinus
 
 import java.nio.ByteBuffer
-import java.nio.charset.StandardCharsets
 
 trait MetricSender {
   def send(message: ByteBuffer): Unit

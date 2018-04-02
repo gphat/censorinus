@@ -2,7 +2,6 @@ package github.gphat.censorinus
 
 import java.nio.{ByteBuffer, CharBuffer}
 import java.nio.charset.{CharsetEncoder, CoderResult, StandardCharsets}
-import java.text.DecimalFormat
 import java.util.ArrayList
 import java.util.concurrent._
 import java.util.concurrent.atomic.AtomicLong

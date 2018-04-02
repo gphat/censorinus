@@ -15,7 +15,7 @@ class UDPSender(
 
   def send(message: ByteBuffer): Unit = {
     try {
-      clientSocket.write(message)
+      val _ = clientSocket.write(message)
     } catch {
       case se @ (_ : SocketException | _ : UnresolvedAddressException) => {
         // Check if we're allowing exceptions and rethrow if so. We didn't use

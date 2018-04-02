@@ -57,7 +57,7 @@ object Encoder extends MetricEncoder {
       case _: SetMetric => "s"
       case _: TimerMetric => "ms"
     }
-    sb.append(metricType)
+    val _ = sb.append(metricType)
   }
 
   def encodeEvent(sc: EventMetric): String = {
@@ -118,7 +118,7 @@ object Encoder extends MetricEncoder {
   def encodeSampleRate(sb: StringBuilder, sampleRate: Double): Unit = {
     if(sampleRate < 1.0) {
       sb.append("|@")
-      sb.append(format.format(sampleRate))
+      val _ = sb.append(format.format(sampleRate))
     }
   }
 

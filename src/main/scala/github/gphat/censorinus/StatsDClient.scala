@@ -2,10 +2,6 @@ package github.gphat.censorinus
 
 import github.gphat.censorinus.statsd.Encoder
 
-import java.text.DecimalFormat
-import java.util.concurrent._
-import scala.util.Random
-
 /** A StatsD client! You should create one of these and reuse it across
   * your application.
   * @constructor Creates a new client instance

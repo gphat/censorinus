@@ -2,8 +2,6 @@ package github.gphat.censorinus
 
 import github.gphat.censorinus.dogstatsd.Encoder
 
-import java.util.concurrent._
-import scala.util.Random
 import scala.util.matching.Regex
 
 object DogStatsDClient {
