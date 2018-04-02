@@ -6,12 +6,13 @@ Censorinus is a Scala \*StatsD client with multiple personalities.
 
 * No dependencies, just boring Scala and Java stuff.
 * Client-side sampling, i.e. don't send it to across the network to reduce traffic. Or you can bypass it and still supply a sample rate if you wanna do it on your end.
-* Asynchronous or Synchronous, your call!
 * [StatsD Compatibility](https://github.com/etsy/statsd/blob/master/docs/metric_types.md)
 * [DogStatsD Compatibility](http://docs.datadoghq.com/guides/dogstatsd/#datagram-format)
+* Asynchronous or Synchronous, your call!
+  * Async: Option for max queue size to avoid overwhelming your upstream and/or having an ubounded queue
+  * Option for batching to reduce syscall overhead
 * UDP only
-* Option for max queue size when using asynchronous.
-* "Swallows" relevant exceptions (IO, Unresolveable) by **default** to prevent runtime errors breaking your service
+* "Swallows" relevant exceptions (`IO`, `Unresolveable`) by **default** to prevent runtime errors breaking your service
 
 # Using It
 
@@ -19,11 +20,11 @@ Censorinus is available on Maven Central.
 
 ```scala
 // Use %% and don't worry about Scala version
-libraryDependencies += "com.github.gphat" %% "censorinus" % "2.1.6"
+libraryDependencies += "com.github.gphat" %% "censorinus" % "2.1.13"
 // Or add the Dep for Scala 2.12
-libraryDependencies += "com.github.gphat" % "censorinus_2.12" % "2.1.6"
+libraryDependencies += "com.github.gphat" % "censorinus_2.12" % "2.1.13"
 // Or add the Dep for Scala 2.11
-libraryDependencies += "com.github.gphat" % "censorinus_2.11" % "2.1.6"
+libraryDependencies += "com.github.gphat" % "censorinus_2.11" % "2.1.13"
 ```
 
 You should create a single instance of a client reuse it throughout your
@@ -121,6 +122,15 @@ adjust this when instantiating a client.
 **Note:** You can call `c.shutdown` to forcibly end things. The threads in this
 executor are flagged as deaemon threads so ending your program will cause any
 unsent metrics to be lost.
+
+## Batching
+
+Specifying a `maxBatchSize` in characters will trigger batching of metrics into
+newline-separated batches when more than one metric is queued. This may reduce
+overhead due to fewer syscalls being required to send along UDP packets. Note:
+Be sure and choose a value that is compatible with your network's MTU! 1500 is
+usually safe but loopback devices can often be larger. Also verify that your
+upstream metric system can handle newline delimited metrics!
 
 # Synchronous
 
