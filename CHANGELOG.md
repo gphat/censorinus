@@ -3,6 +3,7 @@
 ## [2.1.14] - Pending
 
 * Add test for handling floating point timer encoding
+* Remove unnecessary deps and move some to test target. Thanks [travisbrown](https://github.com/travisbrown)!
 
 ## [2.1.13] - 2018-04-01
 
