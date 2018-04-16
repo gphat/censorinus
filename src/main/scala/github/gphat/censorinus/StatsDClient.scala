@@ -54,7 +54,7 @@ class StatsDClient(
     */
   def decrement(
     name: String,
-    value: Double = 1,
+    value: Double = -1,
     sampleRate: Double = defaultSampleRate,
     bypassSampler: Boolean = false
   ): Unit = enqueue(
