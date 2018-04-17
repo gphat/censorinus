@@ -40,7 +40,7 @@ Censorinus is compatible with the StatsD specification as defined [here](https:/
 ```scala
 import github.gphat.censorinus.StatsDClient
 
-val c = new StatsDClient(host = "some.host", port = 8125)
+val c = new StatsDClient(hostname = "some.host", port = 8125)
 
 // Optional sample rate, works with all methods!
 c.counter(name = "foo.count", value = 2, sampleRate = 0.5)
