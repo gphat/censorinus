@@ -84,7 +84,7 @@ class DogStatsDClient(
     */
   def decrement(
     name: String,
-    value: Double = 1,
+    value: Double = -1,
     sampleRate: Double = defaultSampleRate,
     tags: Seq[String] = Seq.empty,
     bypassSampler: Boolean = false

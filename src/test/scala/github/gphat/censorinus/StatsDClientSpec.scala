@@ -41,12 +41,12 @@ class StatsDClientSpec extends FlatSpec with Matchers with BeforeAndAfter {
   }
 
   it should "deal with decrements" in {
-    client.increment("foobar")
+    client.decrement("foobar")
     val m = client.queue.poll
     m shouldBe a [CounterMetric]
     val c = m.asInstanceOf[CounterMetric]
     c.name should be ("poop.foobar")
-    c.value should be (1.0)
+    c.value should be (-1.0)
   }
 
   it should "deal with meters" in {

@@ -45,7 +45,10 @@ object Encoder extends MetricEncoder {
     sb.append(':')
     val finalValue = metric match {
       // This is the only string based-metric
-      case nm: NumericMetric => format.format(nm.value)
+      case nm: NumericMetric => {
+        System.out.println(nm.value)
+        format.format(nm.value)
+      }
       case sm: StringMetric => sm.value
     }
     sb.append(finalValue)

@@ -45,7 +45,7 @@ val c = new StatsDClient(hostname = "some.host", port = 8125)
 // Optional sample rate, works with all methods!
 c.counter(name = "foo.count", value = 2, sampleRate = 0.5)
 c.increment(name = "foo.count") // Defaults to 1
-c.decrement(name = "foo.count") // Defaults to 1
+c.decrement(name = "foo.count") // Defaults to -1
 c.gauge(name = "foo.temperature", value = 84.0)
 c.histogram(name = "foo.depth", value = 123.0)
 c.meter(name = "foo.depth", value = 12.0)

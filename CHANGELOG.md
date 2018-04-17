@@ -4,6 +4,8 @@
 
 * Add test for handling floating point timer encoding
 * Remove unnecessary deps and move some to test target. Thanks [travisbrown](https://github.com/travisbrown)!
+* Correct error in README for StatsDClient constructor. Thanks [tpiron](https://github.com/tpiron)!
+* Fixed incorrect default argument to `decrement`. Thanks [acjay](https://github.com/acjay)!
 
 ## [2.1.13] - 2018-04-01
 
