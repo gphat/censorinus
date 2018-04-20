@@ -46,7 +46,6 @@ object Encoder extends MetricEncoder {
     val finalValue = metric match {
       // This is the only string based-metric
       case nm: NumericMetric => {
-        System.out.println(nm.value)
         format.format(nm.value)
       }
       case sm: StringMetric => sm.value
