@@ -29,7 +29,7 @@ object DogStatsDClient {
   * @constructor Creates a new client instance
   * @param hostname the host to send metrics to, defaults to localhost
   * @param port the port to send metrics to, defaults to 8125
-  * @param prefix A prefix to add to all metric names. A period will be added to the end, resulting in prefix.metricname.
+  * @param prefix A prefix to add to all metric and event names. A period will be added to the end, resulting in prefix.name.
   * @param defaultSampleRate A sample rate default to be used for all metric methods. Defaults to 1.0
   * @param asynchronous True if you want the client to asynch, false for blocking!
   * @param maxQueueSize Maximum amount of metrics allowed to be queued at a time.
@@ -117,7 +117,7 @@ class DogStatsDClient(
     tags: Seq[String] = Seq.empty
   ): Unit = enqueue(
     EventMetric(
-      name = name, text = text, timestamp = timestamp, hostname = hostname,
+      name = makeName(name), text = text, timestamp = timestamp, hostname = hostname,
       aggregationKey = aggregationKey, priority = priority, sourceTypeName = sourceTypeName,
       alertType = alertType, tags = tags
     )
