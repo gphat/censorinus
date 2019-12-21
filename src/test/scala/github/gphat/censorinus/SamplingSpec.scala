@@ -1,9 +1,12 @@
 package github.gphat.censorinus
 
 import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+
 import github.gphat.censorinus.statsd.Encoder
 
-class SamplingSpec extends FlatSpec with Matchers {
+class SamplingSpec extends AnyFlatSpec with Matchers {
 
   val s = new TestSender()
 

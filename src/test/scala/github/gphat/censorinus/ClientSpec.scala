@@ -3,11 +3,16 @@ package github.gphat.censorinus
 import java.nio.ByteBuffer
 import java.nio.charset.StandardCharsets
 import java.util.concurrent.{CountDownLatch, LinkedBlockingQueue, TimeUnit}
-import org.scalacheck.{Arbitrary, Gen}
+
+import org.scalacheck._
 import org.scalacheck.Arbitrary.arbitrary
-import org.scalatest.prop.GeneratorDrivenPropertyChecks
+
 import org.scalatest._
 import org.scalatest.concurrent.Eventually
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+import org.scalatestplus.scalacheck.ScalaCheckPropertyChecks
+
 import github.gphat.censorinus.statsd.Encoder
 
 object TestSender {
@@ -45,7 +50,7 @@ class TestSender(val maxMessages: Int = Int.MaxValue) extends MetricSender {
   def shutdown: Unit = ()
 }
 
-class ClientSpec extends FlatSpec with Matchers with Eventually with GeneratorDrivenPropertyChecks {
+class ClientSpec extends AnyFlatSpec with Matchers with Eventually with ScalaCheckPropertyChecks {
 
   "ClientSpec" should "deal with gauges" in {
     val sender = new TestSender()
