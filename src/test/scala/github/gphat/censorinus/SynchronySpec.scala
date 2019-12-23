@@ -2,9 +2,12 @@ package github.gphat.censorinus
 
 import org.scalatest._
 import org.scalatest.concurrent.Eventually
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+
 import github.gphat.censorinus.statsd.Encoder
 
-class SynchronySpec extends FlatSpec with Matchers with Eventually {
+class SynchronySpec extends AnyFlatSpec with Matchers with Eventually {
 
   "Client" should "deal with gauges" in {
     val s = new TestSender(1)

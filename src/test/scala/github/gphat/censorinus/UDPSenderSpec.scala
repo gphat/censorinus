@@ -1,10 +1,13 @@
 package github.gphat.censorinus
 
 import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+
 import java.nio.ByteBuffer
 import java.nio.channels.UnresolvedAddressException
 
-class UDPSenderSpec extends FlatSpec with Matchers {
+class UDPSenderSpec extends AnyFlatSpec with Matchers {
 
   "UDPSender" should "emit errors" in {
     // Guessing this port won't be used? :)

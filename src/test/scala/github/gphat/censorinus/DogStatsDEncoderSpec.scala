@@ -1,21 +1,24 @@
 package github.gphat.censorinus
 
 import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+
 import github.gphat.censorinus.dogstatsd.Encoder
 
-class DogStatsDEncoderSpec extends FlatSpec with Matchers {
+class DogStatsDEncoderSpec extends AnyFlatSpec with Matchers {
 
   "DogStatsD Encoder" should "encode gauges" in {
 
-    val g = GaugeMetric(name = "foobar", value = 1.0, tags = Array("foo:bar"))
+    val g = GaugeMetric(name = "foobar", value = 1.0, tags = List("foo:bar"))
     Encoder.encode(g).get should be ("foobar:1|g|#foo:bar")
   }
 
   it should "drop infinite values" in {
-    val g1 = GaugeMetric(name = "foobar", value = java.lang.Double.NEGATIVE_INFINITY, tags = Array("foo:bar"))
+    val g1 = GaugeMetric(name = "foobar", value = java.lang.Double.NEGATIVE_INFINITY, tags = List("foo:bar"))
     Encoder.encode(g1) shouldBe None
 
-    val g2 = GaugeMetric(name = "foobar", value = java.lang.Double.POSITIVE_INFINITY, tags = Array("foo:bar"))
+    val g2 = GaugeMetric(name = "foobar", value = java.lang.Double.POSITIVE_INFINITY, tags = List("foo:bar"))
     Encoder.encode(g2) shouldBe None
   }
 
@@ -62,7 +65,7 @@ class DogStatsDEncoderSpec extends FlatSpec with Matchers {
   it should "encode service checks" in {
     val now = System.currentTimeMillis() / 1000L
     val m = ServiceCheckMetric(
-      name = "foobar", status = DogStatsDClient.SERVICE_CHECK_OK, tags = Array("foo:bar"),
+      name = "foobar", status = DogStatsDClient.SERVICE_CHECK_OK, tags = List("foo:bar"),
       hostname = Some("fart"), timestamp = Some(now), message = Some("wheeee")
     )
     Encoder.encode(m).get should be ("_sc|foobar|0|d:%d|h:fart|#foo:bar|m:wheeee".format(now))
@@ -71,7 +74,7 @@ class DogStatsDEncoderSpec extends FlatSpec with Matchers {
   it should "encode service checks with newlines" in {
     val now = System.currentTimeMillis() / 1000L
     val m = ServiceCheckMetric(
-      name = "foobar", status = DogStatsDClient.SERVICE_CHECK_OK, tags = Array("foo:bar"),
+      name = "foobar", status = DogStatsDClient.SERVICE_CHECK_OK, tags = List("foo:bar"),
       hostname = Some("fart"), timestamp = Some(now), message = Some("hello\nworld")
     )
     Encoder.encode(m).get should be ("_sc|foobar|0|d:%d|h:fart|#foo:bar|m:hello\\\\nworld".format(now))
@@ -80,7 +83,7 @@ class DogStatsDEncoderSpec extends FlatSpec with Matchers {
   it should "encode events" in {
     val now = System.currentTimeMillis() / 1000L
     val m = EventMetric(
-      name = "foobar", text = "derp derp derp", tags = Array("foo:bar"),
+      name = "foobar", text = "derp derp derp", tags = List("foo:bar"),
       hostname = Some("fart"), timestamp = Some(now), aggregationKey = Some("agg_key"),
       priority = Some(DogStatsDClient.EVENT_PRIORITY_LOW),
       sourceTypeName = Some("user"),
@@ -92,7 +95,7 @@ class DogStatsDEncoderSpec extends FlatSpec with Matchers {
   it should "encode events with newlines" in {
     val now = System.currentTimeMillis() / 1000L
     val m = EventMetric(
-      name = "foobar", text = "derp derp\nderp", tags = Array("foo:bar"),
+      name = "foobar", text = "derp derp\nderp", tags = List("foo:bar"),
       hostname = Some("fart"), timestamp = Some(now), aggregationKey = Some("agg_key"),
       priority = Some(DogStatsDClient.EVENT_PRIORITY_LOW),
       sourceTypeName = Some("user"),

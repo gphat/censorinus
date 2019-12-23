@@ -7,8 +7,9 @@ import java.util.concurrent._
 import java.util.concurrent.atomic.AtomicLong
 import java.util.logging.Logger
 
-import scala.util.control.NonFatal
+import scala.collection.BufferedIterator
 import scala.collection.JavaConverters._
+import scala.util.control.NonFatal
 
 /** A Censorinus client! You should create one of these and reuse it across
   * your application.

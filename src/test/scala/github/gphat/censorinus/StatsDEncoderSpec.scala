@@ -1,9 +1,12 @@
 package github.gphat.censorinus
 
 import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
+
 import github.gphat.censorinus.statsd.Encoder
 
-class StatsDEncoderSpec extends FlatSpec with Matchers {
+class StatsDEncoderSpec extends AnyFlatSpec with Matchers {
 
   "StatsD Encoder" should "encode gauges" in {
 

@@ -1,8 +1,10 @@
 package github.gphat.censorinus
 
 import org.scalatest._
+import org.scalatest.flatspec.AnyFlatSpec
+import org.scalatest.matchers.should.Matchers
 
-class DogStatsDClientSpec extends FlatSpec with Matchers with BeforeAndAfter {
+class DogStatsDClientSpec extends AnyFlatSpec with Matchers with BeforeAndAfter {
 
   var client: DogStatsDClient = null
 
