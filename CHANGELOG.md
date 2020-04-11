@@ -1,6 +1,12 @@
 # Changelog
 
-## [2.1.14] - Pending
+## [2.1.16] - 2020-04-11
+
+* Scala 2.13 support. Thanks [NeQuissimus](https://github.com/NeQuissimus)!
+
+## [2.1.15] - 2018-04-20
+
+## [2.1.14] - 2018-04-16
 
 * Add test for handling floating point timer encoding
 * Remove unnecessary deps and move some to test target. Thanks [travisbrown](https://github.com/travisbrown)!
